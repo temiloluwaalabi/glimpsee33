@@ -46,7 +46,25 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "https://res.cloudinary.com",
       },
+      {
+        protocol: "https",
+        hostname: "picsum.photos",
+      },
+      {
+        protocol: "https",
+        hostname: "jsonplaceholder.typicode.com",
+      },
+      {
+        protocol: "https",
+        hostname: "via.placeholder.com",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
     ],
+    formats: ["image/avif", "image/webp"],
+    dangerouslyAllowSVG: true,
   },
 
   // eslint: {
