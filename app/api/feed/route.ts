@@ -1,5 +1,5 @@
 import { allMockFeedItems } from "@/config/constants/mockdata";
-import { FeedQuery } from "@/lib/query/service-query";
+import { FeedQuery } from "@/lib/api/api";
 import { FeedItem, PaginatedResponse } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
 

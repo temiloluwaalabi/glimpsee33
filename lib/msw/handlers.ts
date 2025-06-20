@@ -1,5 +1,6 @@
-import { allMockFeedItems, mockCategories } from "@/config/constants/mockdata";
 import { delay, http, HttpResponse } from "msw";
+
+import { allMockFeedItems, mockCategories } from "@/config/constants/mockdata";
 
 export const handlers = [
   http.get(`${process.env.NEXT_PUBLIC_API}/feed`, async ({ request }) => {
@@ -50,7 +51,8 @@ export const handlers = [
         totalPages: Math.ceil(filteredItems.length / limit),
         hasMore: endIndex < filteredItems.length,
       },
-      success: true,
+      status: true,
+      message: "All feeds fetched successfully",
     });
   }),
 
@@ -62,11 +64,15 @@ export const handlers = [
     );
     if (!item) {
       return HttpResponse.json(
-        { success: false, error: "Feed item not found" },
+        { success: false, message: "Feed item not found" },
         { status: 404 }
       );
     }
-    return HttpResponse.json({ data: item, success: true });
+    return HttpResponse.json({
+      data: item,
+      status: true,
+      message: "All feeds fetched successfully",
+    });
   }),
 
   // GET CATEGORIES
@@ -75,7 +81,8 @@ export const handlers = [
 
     return HttpResponse.json({
       data: mockCategories,
-      success: true,
+      status: true,
+      message: "All feeds fetched successfully",
     });
   }),
 
@@ -90,7 +97,7 @@ export const handlers = [
       );
       if (!item) {
         return HttpResponse.json(
-          { success: false, error: "Feed item not found" },
+          { success: false, message: "Feed item not found" },
           { status: 404 }
         );
       }
@@ -101,7 +108,8 @@ export const handlers = [
       item.likes += item.isLiked ? 1 : -1;
       return HttpResponse.json({
         data: { isLiked: item.isLiked, likes: item.likes },
-        success: true,
+        status: true,
+        message: "All feeds fetched successfully",
       });
     }
   ),
@@ -116,7 +124,7 @@ export const handlers = [
       );
       if (!item) {
         return HttpResponse.json(
-          { success: false, error: "Feed item not found" },
+          { success: false, message: "Feed item not found" },
           { status: 404 }
         );
       }
@@ -126,7 +134,8 @@ export const handlers = [
       item.isBookmarked = !item.isBookmarked;
       return HttpResponse.json({
         data: { isBookmarked: item.isBookmarked },
-        success: true,
+        status: true,
+        message: "All feeds fetched successfully",
       });
     }
   ),

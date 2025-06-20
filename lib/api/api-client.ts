@@ -76,11 +76,11 @@ export class ApiError extends Error {
       (typeof obj === "object" &&
         obj !== null &&
         "isError" in obj &&
-        (obj as any).isError === true)
+        (obj as Record<string, unknown>).isError === true)
     );
   }
 
-  static markAsError(error: unknown): Record<string, any> {
+  static markAsError(error: unknown): Record<string, unknown> {
     if (error instanceof ApiError) {
       return {
         ...error,
@@ -181,7 +181,7 @@ const handleApiError = (error: AxiosError<unknown>) => {
   // Extract response details
   const { status, data } = error.response as {
     status: number;
-    data: Partial<ApiErrorResponse> & Record<string, any>;
+    data: Partial<ApiErrorResponse> & Record<string, unknown>;
   };
 
   // Try to extract messages from known fields
@@ -219,7 +219,7 @@ const handleApiError = (error: AxiosError<unknown>) => {
  * Handles successful API responses.
  * Returns the response data directly, or wraps it if needed.
  */
-const handleApiSuccess = <T = any>(response: { data: T }) => {
+const handleApiSuccess = <T = unknown>(response: { data: T }) => {
   return response.data;
 };
 
@@ -241,3 +241,4 @@ apiClient.interceptors.response.use(
     return handleApiError(error);
   }
 );
+

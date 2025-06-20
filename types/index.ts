@@ -66,10 +66,11 @@ export interface User {
 }
 
 export interface ApiResponse<T> {
-  data: T;
-  message: string;
-  success: boolean;
-  timestamp: string;
+  status: boolean;
+  message?: string;
+  [key: string]: T | string | boolean | undefined;
+  success?: boolean;
+  timestamp?: string;
 }
 
 export interface PaginatedResponse<T> {
