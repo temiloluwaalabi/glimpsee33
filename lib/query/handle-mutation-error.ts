@@ -1,4 +1,3 @@
- 
 "use client";
 import { toast } from "sonner";
 
@@ -11,27 +10,27 @@ export const handleMutationError = (error: unknown) => {
   console.error("Mutation Error", error);
   // If error is already an instance of ApiError, handle it normally
   if (error instanceof ApiError) {
-    const apiError = error instanceof ApiError ? error : new ApiError(error)
+    const apiError = error instanceof ApiError ? error : new ApiError(error);
     processApiError(apiError);
     return;
   }
-//   // If error is an object with a statusCode, transform it into an ApiError
-//   if (typeof error === "object" && error !== null && "statusCode" in error) {
-//     const apiErrorLike = error as any;
-//     console.log("Converting error-like object to ApiError:", apiErrorLike);
+  //   // If error is an object with a statusCode, transform it into an ApiError
+  //   if (typeof error === "object" && error !== null && "statusCode" in error) {
+  //     const apiErrorLike = error as any;
+  //     console.log("Converting error-like object to ApiError:", apiErrorLike);
 
-//     // Create proper ApiError with all available properties
-//     const apiError = new ApiError({
-//       statusCode: apiErrorLike.statusCode || 500,
-//       messages:
-//         apiErrorLike.message || apiErrorLike.messages || "Unknown error",
-//       errorType: apiErrorLike.errorType || "API_ERROR",
-//       rawErrors: apiErrorLike.rawErrors,
-//     });
+  //     // Create proper ApiError with all available properties
+  //     const apiError = new ApiError({
+  //       statusCode: apiErrorLike.statusCode || 500,
+  //       messages:
+  //         apiErrorLike.message || apiErrorLike.messages || "Unknown error",
+  //       errorType: apiErrorLike.errorType || "API_ERROR",
+  //       rawErrors: apiErrorLike.rawErrors,
+  //     });
 
-//     processApiError(apiError);
-//     return;
-//   }
+  //     processApiError(apiError);
+  //     return;
+  //   }
 
   // Handle generic JavaScript errors (e.g., network failures)
   if (error instanceof Error) {
@@ -57,8 +56,8 @@ const processApiError = (error: ApiError) => {
     typeof message === "string"
       ? message
       : Array.isArray(message)
-      ? (message as string[]).join("; ")
-      : "An error occurred";
+        ? (message as string[]).join("; ")
+        : "An error occurred";
 
   switch (statusCode) {
     case 400:
@@ -86,9 +85,11 @@ const processApiError = (error: ApiError) => {
         try {
           Object.entries(rawErrors).forEach(([field, errorMessages]) => {
             if (Array.isArray(errorMessages)) {
-              errorMessages.filter((msg) => typeof msg === "string").forEach((msg: string) => {
-                toast.error(`${field}: ${msg}`);
-              });
+              errorMessages
+                .filter((msg) => typeof msg === "string")
+                .forEach((msg: string) => {
+                  toast.error(`${field}: ${msg}`);
+                });
             } else if (typeof errorMessages === "string") {
               toast.error(`${field}: ${errorMessages}`);
             }
