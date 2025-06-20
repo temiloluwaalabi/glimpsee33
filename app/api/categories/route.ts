@@ -3,14 +3,14 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    return NextResponse.json({ 
-      data: mockCategories, 
-      success: true 
+    return NextResponse.json({
+      data: mockCategories,
+      success: true,
     });
   } catch (error) {
-    console.error('Categories API error:', error);
+    console.error("Categories API error:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

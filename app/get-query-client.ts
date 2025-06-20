@@ -5,7 +5,6 @@ import {
   isServer,
 } from "@tanstack/react-query";
 
-
 function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {

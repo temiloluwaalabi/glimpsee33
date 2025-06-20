@@ -4,44 +4,50 @@ import { FeedItem, PaginatedResponse } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
-    try {
-        const {searchParams} = new URL(request.url)
+  try {
+    const { searchParams } = new URL(request.url);
 
-        const query: FeedQuery = {
-            page: parseInt(searchParams.get("page") || "1"),
-            limit: parseInt(searchParams.get("limit") || "10"),
-            category: searchParams.get("category") || undefined,
-            featured: searchParams.get("featured") === "true" || undefined,
-            search: searchParams.get("search") || undefined,
-            authorId: searchParams.get("authorId") || undefined
-        }
+    const query: FeedQuery = {
+      page: parseInt(searchParams.get("page") || "1"),
+      limit: parseInt(searchParams.get("limit") || "10"),
+      category: searchParams.get("category") || undefined,
+      featured: searchParams.get("featured") === "true" || undefined,
+      search: searchParams.get("search") || undefined,
+      authorId: searchParams.get("authorId") || undefined,
+    };
 
-        let filteredItems = [...allMockFeedItems];
-        // Apply filters
+    let filteredItems = [...allMockFeedItems];
+    // Apply filters
     if (query.category) {
-      filteredItems = filteredItems.filter(item => item.category === query.category);
+      filteredItems = filteredItems.filter(
+        (item) => item.category === query.category
+      );
     }
 
     if (query.featured) {
-      filteredItems = filteredItems.filter(item => item.featured);
+      filteredItems = filteredItems.filter((item) => item.featured);
     }
 
     if (query.search) {
       const searchLower = query.search.toLowerCase();
-      filteredItems = filteredItems.filter(item =>
-        item.title.toLowerCase().includes(searchLower) ||
-        item.description.toLowerCase().includes(searchLower) ||
-        item.tags.some(tag => tag.toLowerCase().includes(searchLower))
+      filteredItems = filteredItems.filter(
+        (item) =>
+          item.title.toLowerCase().includes(searchLower) ||
+          item.description.toLowerCase().includes(searchLower) ||
+          item.tags.some((tag) => tag.toLowerCase().includes(searchLower))
       );
     }
 
     if (query.authorId) {
-      filteredItems = filteredItems.filter(item => item.author.id === query.authorId);
+      filteredItems = filteredItems.filter(
+        (item) => item.author.id === query.authorId
+      );
     }
 
     // Sort by publishedAt (newest first)
-    filteredItems.sort((a, b) => 
-      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+    filteredItems.sort(
+      (a, b) =>
+        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
     );
 
     // Pagination
@@ -49,7 +55,7 @@ export async function GET(request: NextRequest) {
     const limit = query.limit || 10;
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
-    
+
     const paginatedItems = filteredItems.slice(startIndex, endIndex);
 
     const response: PaginatedResponse<FeedItem> = {
@@ -60,18 +66,21 @@ export async function GET(request: NextRequest) {
         total: filteredItems.length,
         totalPages: Math.ceil(filteredItems.length / limit),
         hasNext: endIndex < filteredItems.length,
-        hasPrev: startIndex > 0
+        hasPrev: startIndex > 0,
       },
       message: "Feed fetched successfully",
       success: true,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     return NextResponse.json(response);
-    } catch (error) {
-        console.error("FEED API ERROR", error);
-        return NextResponse.json({
-            error: "Internal Server Error"
-        }, {status: 500})
-    }
+  } catch (error) {
+    console.error("FEED API ERROR", error);
+    return NextResponse.json(
+      {
+        error: "Internal Server Error",
+      },
+      { status: 500 }
+    );
+  }
 }
