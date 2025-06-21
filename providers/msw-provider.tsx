@@ -14,7 +14,6 @@ export function MSWProvider({ children }: MSWProviderProps) {
   useEffect(() => {
     const initMSW = async () => {
       if (process.env.NODE_ENV === "development") {
-        
         await enableMocking();
       }
       setIsMSWReady(true);

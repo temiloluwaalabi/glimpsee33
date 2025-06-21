@@ -1,28 +1,27 @@
-import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
-import { immer } from 'zustand/middleware/immer';
+import { create } from "zustand";
+import { devtools, persist } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
 
-import { FeedQuery } from '@/lib/api/api';
-import type { AppState, User, Toast, LoadingState } from '@/types';
+import { FeedQuery } from "@/lib/api/api";
+import type { AppState, User, Toast, LoadingState } from "@/types";
 
 interface AppStore extends AppState {
-  viewMode: 'grid' | 'list',
+  viewMode: "grid" | "list";
   cache: {
     categories: string[];
-    recentSearches: string[]
-  } 
+    recentSearches: string[];
+  };
 }
 
 export interface AppActions {
- // Auth actions
+  // Auth actions
   setUser: (user: User | null) => void;
   login: (user: User) => void;
   logout: () => void;
-  
+
   // UI actions
-  setTheme: (theme: 'light' | 'dark' | 'system') => void;
- 
-  
+  setTheme: (theme: "light" | "dark" | "system") => void;
+
   setSearchQuery: (query: string) => void;
   setGlobalSearchQuery: (query: string) => void;
   setSelectedCategory: (category: string) => void;
@@ -32,55 +31,55 @@ export interface AppActions {
   resetFilters: () => void;
   // Search & Filter actions
   updateFilters: (filters: Partial<FeedQuery>) => void;
-  syncFromURL: (urlParams: Record<string, string>) => void
+  syncFromURL: (urlParams: Record<string, string>) => void;
 
   // Toast actions
-  addToast: (toast: Omit<Toast, 'id'>) => void;
+  addToast: (toast: Omit<Toast, "id">) => void;
   removeToast: (id: string) => void;
   clearToasts: () => void;
-  
+
   // Loading actions
   setLoading: (key: string, state: LoadingState) => void;
   clearLoading: (key: string) => void;
-  
+
   // Utility actions
   reset: () => void;
 
-  updatePreference: (preference: Partial<AppState['preference']>) => void;
+  updatePreference: (preference: Partial<AppState["preference"]>) => void;
   addRecentSearch: (query: string) => void;
   clearRecentSearches: () => void;
-  updateCategories: (categories: string[]) => void
+  updateCategories: (categories: string[]) => void;
 
   // Utility getters
   getSearchQuery: () => string;
   getSelectedCategory: () => string;
   getSortBy: () => string;
-  getViewMode: () => 'grid' | 'list';
+  getViewMode: () => "grid" | "list";
   getActiveFiltersCount: () => number;
 }
 const initialSearchFilters: FeedQuery = {
   page: 1,
   limit: 10,
-  category: '',
-  search: '',
+  category: "",
+  search: "",
   globalSearch: "",
   featured: false,
-  authorId: '',
-  startDate: '',
-  endDate: '',
-  sortBy: 'newest',
-  viewMode: "grid"
+  authorId: "",
+  startDate: "",
+  endDate: "",
+  sortBy: "newest",
+  viewMode: "grid",
 };
 
 const DEFAULT_PREFERENCES = {
-    defaultView: "grid" as const,
-  defaultSort: 'newest',
+  defaultView: "grid" as const,
+  defaultSort: "newest",
   theme: "dark" as const,
-}
+};
 
 const initialState: AppStore = {
   viewMode: "grid" as const,
-  filters:{...initialSearchFilters},
+  filters: { ...initialSearchFilters },
   user: null,
   isAuthenticated: false,
   preference: { ...DEFAULT_PREFERENCES },
@@ -124,46 +123,58 @@ export const useAppStore = create<AppStore & AppActions>()(
             state.preference.theme = theme;
           }),
 
-        setViewMode: (view: 'grid' | 'list') =>
+        setViewMode: (view: "grid" | "list") =>
           set((state) => {
             state.preference.defaultView = view;
-            state.preference.defaultView = view
+            state.preference.defaultView = view;
           }),
 
         setSortBy: (sort) =>
           set((state) => {
             state.filters.sortBy = sort;
-            state.filters.page = 1
+            state.filters.page = 1;
           }),
 
         setSelectedCategory: (category) =>
           set((state) => {
             state.filters.category = category;
-            state.filter.page = 1
+            state.filter.page = 1;
           }),
 
-      setSearchQuery: (query: string) =>
+        setSearchQuery: (query: string) =>
           set((state) => {
             state.filters.search = query;
             state.filters.page = 1; // Reset page when searching
-            
+
             // Add to recent searches if not empty and not already present
-            if (query.trim() && !state.cache.recentSearches.includes(query.trim())) {
+            if (
+              query.trim() &&
+              !state.cache.recentSearches.includes(query.trim())
+            ) {
               state.cache.recentSearches.unshift(query.trim());
               // Keep only last 10 searches
-              state.cache.recentSearches = state.cache.recentSearches.slice(0, 10);
+              state.cache.recentSearches = state.cache.recentSearches.slice(
+                0,
+                10
+              );
             }
           }),
-      setGlobalSearchQuery: (query: string) =>
+        setGlobalSearchQuery: (query: string) =>
           set((state) => {
             state.filters.globalSearch = query;
             state.filters.page = 1; // Reset page when searching
-            
+
             // Add to recent searches if not empty and not already present
-            if (query.trim() && !state.cache.recentSearches.includes(query.trim())) {
+            if (
+              query.trim() &&
+              !state.cache.recentSearches.includes(query.trim())
+            ) {
               state.cache.recentSearches.unshift(query.trim());
               // Keep only last 10 searches
-              state.cache.recentSearches = state.cache.recentSearches.slice(0, 10);
+              state.cache.recentSearches = state.cache.recentSearches.slice(
+                0,
+                10
+              );
             }
           }),
 
@@ -174,7 +185,7 @@ export const useAppStore = create<AppStore & AppActions>()(
 
         resetFilters: () =>
           set((state) => {
-            state.filters = { ...initialSearchFilters, };
+            state.filters = { ...initialSearchFilters };
           }),
 
         // Search & Filter actions
@@ -187,49 +198,54 @@ export const useAppStore = create<AppStore & AppActions>()(
           set((state) => {
             const newFilters: Partial<FeedQuery> = {};
 
-            if(urlParams.search !== undefined){
-              newFilters.search = urlParams.search || ''
+            if (urlParams.search !== undefined) {
+              newFilters.search = urlParams.search || "";
             }
 
-            if(urlParams.category !== undefined){
-              newFilters.category = urlParams.category || "all"
+            if (urlParams.category !== undefined) {
+              newFilters.category = urlParams.category || "all";
             }
 
             if (urlParams.featured !== undefined) {
-              newFilters.featured = urlParams.featured === 'true';
+              newFilters.featured = urlParams.featured === "true";
             }
 
             if (urlParams.authorId !== undefined) {
-              newFilters.authorId = urlParams.authorId || '';
+              newFilters.authorId = urlParams.authorId || "";
             }
 
             if (urlParams.startDate !== undefined) {
-              newFilters.startDate = urlParams.startDate || '';
+              newFilters.startDate = urlParams.startDate || "";
             }
 
             if (urlParams.endDate !== undefined) {
-              newFilters.endDate = urlParams.endDate || '';
+              newFilters.endDate = urlParams.endDate || "";
             }
 
-            if(urlParams.limit !== undefined){
-              newFilters.limit = Number(urlParams.limit) || 10
+            if (urlParams.limit !== undefined) {
+              newFilters.limit = Number(urlParams.limit) || 10;
             }
 
-            if(urlParams.sort !== undefined){
-              const allowedSorts = ["newest", "oldest", "popular", "trending"] as const;
-              newFilters.sortBy = allowedSorts.includes(urlParams.sort as typeof allowedSorts[number])
-                ? urlParams.sort as typeof allowedSorts[number]
+            if (urlParams.sort !== undefined) {
+              const allowedSorts = [
+                "newest",
+                "oldest",
+                "popular",
+                "trending",
+              ] as const;
+              newFilters.sortBy = allowedSorts.includes(
+                urlParams.sort as (typeof allowedSorts)[number]
+              )
+                ? (urlParams.sort as (typeof allowedSorts)[number])
                 : "newest";
             }
-  if (urlParams.view !== undefined) {
-              newFilters.viewMode = (urlParams.view as 'grid' | 'list') || 'grid';
+            if (urlParams.view !== undefined) {
+              newFilters.viewMode =
+                (urlParams.view as "grid" | "list") || "grid";
             }
             if (urlParams.page !== undefined) {
               newFilters.page = parseInt(urlParams.page, 10) || 1;
             }
-            
-
-
 
             Object.entries(urlParams).forEach(([key, value]) => {
               if (key in state.filters) {
@@ -247,7 +263,9 @@ export const useAppStore = create<AppStore & AppActions>()(
 
         removeToast: (id) =>
           set((state) => {
-            state.toasts = state.toasts.filter((toast: Toast) => toast.id !== id);
+            state.toasts = state.toasts.filter(
+              (toast: Toast) => toast.id !== id
+            );
           }),
 
         clearToasts: () =>
@@ -282,7 +300,10 @@ export const useAppStore = create<AppStore & AppActions>()(
             if (!state.cache.recentSearches.includes(query.trim())) {
               state.cache.recentSearches.unshift(query.trim());
               if (state.cache.recentSearches.length > 10) {
-                state.cache.recentSearches = state.cache.recentSearches.slice(0, 10);
+                state.cache.recentSearches = state.cache.recentSearches.slice(
+                  0,
+                  10
+                );
               }
             }
           }),
@@ -307,9 +328,9 @@ export const useAppStore = create<AppStore & AppActions>()(
           let count = 0;
           Object.entries(filters).forEach(([key, value]) => {
             if (
-              key !== 'page' &&
-              key !== 'limit' &&
-              value !== '' &&
+              key !== "page" &&
+              key !== "limit" &&
+              value !== "" &&
               value !== "all" &&
               value !== "newest" &&
               value !== false &&
@@ -323,7 +344,7 @@ export const useAppStore = create<AppStore & AppActions>()(
         },
       })),
       {
-        name: 'glimpse33-feed-explorer',
+        name: "glimpse33-feed-explorer",
         partialize: (state) => ({
           preference: state.preference,
           cache: state.cache,
@@ -331,14 +352,15 @@ export const useAppStore = create<AppStore & AppActions>()(
       }
     ),
     {
-      name: 'AppStore',
+      name: "AppStore",
     }
   )
 );
 
 // Selectors
 export const useUser = () => useAppStore((state) => state.user);
-export const useIsAuthenticated = () => useAppStore((state) => state.isAuthenticated);
+export const useIsAuthenticated = () =>
+  useAppStore((state) => state.isAuthenticated);
 export const useFilters = () => useAppStore((state) => state.filters);
 export const usePreferences = () => useAppStore((state) => state.preference);
 export const useCache = () => useAppStore((state) => state.cache);
@@ -348,9 +370,12 @@ export const useCache = () => useAppStore((state) => state.cache);
 // }));
 
 // Legacy selectors for backward compatibility
-export const useSearchQuery = () => useAppStore((state) => state.filters.search);
-export const useSelectedCategory = () => useAppStore((state) => state.filters.category);
+export const useSearchQuery = () =>
+  useAppStore((state) => state.filters.search);
+export const useSelectedCategory = () =>
+  useAppStore((state) => state.filters.category);
 export const useSortBy = () => useAppStore((state) => state.filters.sortBy);
 export const useViewMode = () => useAppStore((state) => state.filters.viewMode);
 export const useToasts = () => useAppStore((state) => state.toasts);
-export const useLoading = (key: string) => useAppStore((state) => state.loading[key]);
+export const useLoading = (key: string) =>
+  useAppStore((state) => state.loading[key]);
