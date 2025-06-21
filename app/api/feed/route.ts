@@ -1,7 +1,8 @@
+import { NextRequest, NextResponse } from "next/server";
+
 import { allMockFeedItems } from "@/config/constants/mockdata";
 import { FeedQuery } from "@/lib/api/api";
 import { FeedItem, PaginatedResponse } from "@/types";
-import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   try {
@@ -59,26 +60,30 @@ export async function GET(request: NextRequest) {
     const paginatedItems = filteredItems.slice(startIndex, endIndex);
 
     const response: PaginatedResponse<FeedItem> = {
-      data: paginatedItems,
-      pagination: {
-        page,
-        limit,
-        total: filteredItems.length,
-        totalPages: Math.ceil(filteredItems.length / limit),
-        hasNext: endIndex < filteredItems.length,
-        hasPrev: startIndex > 0,
+      data: {
+        items: paginatedItems,
+        pagination: {
+          page,
+          limit,
+          total: filteredItems.length,
+          totalPages: Math.ceil(filteredItems.length / limit),
+          hasNext: endIndex < filteredItems.length,
+          hasPrev: startIndex > 0,
+        },
       },
       message: "Feed fetched successfully",
       success: true,
       timestamp: new Date().toISOString(),
     };
 
-    return NextResponse.json(response);
+    return NextResponse.json(response, {
+      status: 200,
+    });
   } catch (error) {
     console.error("FEED API ERROR", error);
     return NextResponse.json(
       {
-        error: "Internal Server Error",
+        message: "Internal Server Error",
       },
       { status: 500 }
     );

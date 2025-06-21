@@ -1,5 +1,6 @@
-import { allMockFeedItems } from "@/config/constants/mockdata";
 import { NextRequest, NextResponse } from "next/server";
+
+import { allMockFeedItems } from "@/config/constants/mockdata";
 
 interface RouteContext {
   params: {
@@ -13,16 +14,20 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
 
     if (!feedItem) {
       return NextResponse.json(
-        { error: "Feed item not found" },
+        { message: "Feed item not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ data: feedItem, success: true });
+    return NextResponse.json({
+      data: feedItem,
+      success: true,
+      message: "Feed item fetched successfully",
+    });
   } catch (error) {
     console.error("Feed item API error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { message: "Internal server error" },
       { status: 500 }
     );
   }

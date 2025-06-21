@@ -200,9 +200,16 @@ interface MakeApiRequestOptions {
   params?: Record<string, string | number | boolean>;
   pathname?: string;
   body?: ApiRequestBody;
-  dataKey?: string; // optional
+  dataKey?: string | string[]; // optional
 }
+// Helper function to safely extract nested data
+const extractNestedData = (obj: any, path: string | string[]): any => {
+  if (typeof path === "string") {
+    return obj?.[path];
+  }
 
+  return path.reduce((current, key) => current?.[key], obj);
+};
 export const makeApiRequest = async <T>(
   endpoint: string,
   method: "POST" | "GET",
@@ -213,6 +220,7 @@ export const makeApiRequest = async <T>(
       status: number;
       message?: string;
       data?: T;
+      rawResponse?: any;
     }
   | ApiError
 > => {
@@ -237,9 +245,6 @@ export const makeApiRequest = async <T>(
     } else {
       const isFormData = body instanceof FormData;
 
-      console.log("isFormData", isFormData);
-      console.log("SERVER FORMDATA", body);
-
       if (isFormData) {
         // Check if FormData contains files
         let hasFiles = false;
@@ -257,20 +262,21 @@ export const makeApiRequest = async <T>(
           // Convert FormData to object for specific endpoints when no files
           const formDataObj: Record<string, any> = {};
           body.forEach((value, key) => {
-            // Special handling for recipient field - parse JSON string into object
-            if (
-              key === "recipient" &&
-              typeof value === "string" &&
-              value.startsWith("{")
-            ) {
-              try {
-                formDataObj[key] = JSON.parse(value);
-              } catch {
-                formDataObj[key] = value; // Keep as string if parsing fails
-              }
-            } else {
-              formDataObj[key] = value;
-            }
+            // // Special handling for recipient field - parse JSON string into object
+            // if (
+            //   key === "recipient" &&
+            //   typeof value === "string" &&
+            //   value.startsWith("{")
+            // ) {
+            //   try {
+            //     formDataObj[key] = JSON.parse(value);
+            //   } catch {
+            //     formDataObj[key] = value; // Keep as string if parsing fails
+            //   }
+            // } else {
+            //   formDataObj[key] = value;
+            // }
+            formDataObj[key] = value;
           });
           console.log(
             "Converted FormData to object with parsed fields:",
@@ -303,22 +309,33 @@ export const makeApiRequest = async <T>(
     }
 
     const data = response.data;
-    console.log("RESPONSE DATA", data);
 
-    if (data.status === false) {
+    if (data.success === false) {
       return new ApiError({
         statusCode: response.status || 500,
-        messages: data.message || "Unknown error occurred",
+        messages: Array.isArray(data.message)
+          ? data.message
+          : [data.message || "Unknown error occurred"],
         errorType: "API_ERROR",
         rawErrors: data as unknown as Record<string, unknown>,
       });
     }
 
+    const extractedData = extractNestedData(data, dataKey);
+
+    // Log extraction for debugging
+    // console.log("Data extraction:", {
+    //   dataKey,
+    //   extractedData,
+    //   fullResponse: data,
+    // });
+
     return {
       success: true,
-      status: 200,
-      message: data.message || "Activity Performed Successfully",
-      data: data[dataKey] as T,
+      status: response.status || 200,
+      message: data.message || "Request Completed Successfully",
+      data: extractedData as T,
+      rawResponse: data,
     };
   } catch (error) {
     logger.error(`Error in ${endpoint}:`, error);

@@ -58,19 +58,9 @@ export const mockAuthors: User[] = [
     createdAt: "2024-01-15T00:00:00Z",
     preferences: {
       theme: "dark",
-      language: "en",
-      notifications: {
-        email: true,
-        push: true,
-        newPosts: true,
-        likes: true,
-        comments: true,
-      },
-      privacy: {
-        profileVisible: true,
-        activityVisible: true,
-        emailVisible: false,
-      },
+
+      defaultSort: "trending",
+      defaultView: "grid",
     },
   },
   {
@@ -83,19 +73,21 @@ export const mockAuthors: User[] = [
     createdAt: "2024-01-10T00:00:00Z",
     preferences: {
       theme: "light",
-      language: "en",
-      notifications: {
-        email: true,
-        push: false,
-        newPosts: true,
-        likes: false,
-        comments: true,
-      },
-      privacy: {
-        profileVisible: true,
-        activityVisible: false,
-        emailVisible: false,
-      },
+      defaultSort: "trending",
+      defaultView: "grid",
+      // language: "en",
+      // notifications: {
+      //   email: true,
+      //   push: true,
+      //   newPosts: true,
+      //   likes: true,
+      //   comments: true,
+      // },
+      // privacy: {
+      //   profileVisible: true,
+      //   activityVisible: true,
+      //   emailVisible: false,
+      // },
     },
   },
   {
@@ -107,20 +99,22 @@ export const mockAuthors: User[] = [
     role: "user",
     createdAt: "2024-01-05T00:00:00Z",
     preferences: {
-      theme: "dark",
-      language: "en",
-      notifications: {
-        email: false,
-        push: true,
-        newPosts: true,
-        likes: true,
-        comments: false,
-      },
-      privacy: {
-        profileVisible: false,
-        activityVisible: true,
-        emailVisible: false,
-      },
+      theme: "light",
+      defaultSort: "trending",
+      defaultView: "grid",
+      // language: "en",
+      // notifications: {
+      //   email: true,
+      //   push: true,
+      //   newPosts: true,
+      //   likes: true,
+      //   comments: true,
+      // },
+      // privacy: {
+      //   profileVisible: true,
+      //   activityVisible: true,
+      //   emailVisible: false,
+      // },
     },
   },
   {
@@ -133,19 +127,21 @@ export const mockAuthors: User[] = [
     createdAt: "2024-01-08T00:00:00Z",
     preferences: {
       theme: "light",
-      language: "en",
-      notifications: {
-        email: true,
-        push: true,
-        newPosts: false,
-        likes: true,
-        comments: true,
-      },
-      privacy: {
-        profileVisible: true,
-        activityVisible: false,
-        emailVisible: true,
-      },
+      defaultSort: "trending",
+      defaultView: "grid",
+      // language: "en",
+      // notifications: {
+      //   email: true,
+      //   push: true,
+      //   newPosts: true,
+      //   likes: true,
+      //   comments: true,
+      // },
+      // privacy: {
+      //   profileVisible: true,
+      //   activityVisible: true,
+      //   emailVisible: false,
+      // },
     },
   },
   {
@@ -157,20 +153,22 @@ export const mockAuthors: User[] = [
     role: "user",
     createdAt: "2024-01-12T00:00:00Z",
     preferences: {
-      theme: "dark",
-      language: "en",
-      notifications: {
-        email: false,
-        push: false,
-        newPosts: true,
-        likes: false,
-        comments: true,
-      },
-      privacy: {
-        profileVisible: false,
-        activityVisible: false,
-        emailVisible: false,
-      },
+      theme: "light",
+      defaultSort: "trending",
+      defaultView: "grid",
+      // language: "en",
+      // notifications: {
+      //   email: true,
+      //   push: true,
+      //   newPosts: true,
+      //   likes: true,
+      //   comments: true,
+      // },
+      // privacy: {
+      //   profileVisible: true,
+      //   activityVisible: true,
+      //   emailVisible: false,
+      // },
     },
   },
   {
@@ -183,19 +181,9 @@ export const mockAuthors: User[] = [
     createdAt: "2024-01-18T00:00:00Z",
     preferences: {
       theme: "light",
-      language: "en",
-      notifications: {
-        email: true,
-        push: true,
-        newPosts: true,
-        likes: true,
-        comments: true,
-      },
-      privacy: {
-        profileVisible: true,
-        activityVisible: true,
-        emailVisible: false,
-      },
+
+      defaultSort: "trending",
+      defaultView: "grid",
     },
   },
 ];
@@ -212,7 +200,7 @@ export const mockFeedItems: FeedItem[] = [
     title: "The Future of Artificial Intelligence: Beyond ChatGPT",
     description:
       "Exploring the next generation of AI technologies and their potential impact on society, from autonomous systems to creative AI applications.",
-    content: `
+    content: `   
       <h2>The AI Revolution Continues</h2>
       <p>As we move beyond the initial excitement of large language models like ChatGPT, the artificial intelligence landscape is evolving at an unprecedented pace. The next wave of AI innovations promises to transform not just how we work, but how we live, create, and interact with the world around us.</p>
       
@@ -501,18 +489,20 @@ export const mockCurrentUser: User = {
   createdAt: "2024-01-18T00:00:00Z",
   preferences: {
     theme: "light",
-    language: "en",
-    notifications: {
-      email: true,
-      push: true,
-      newPosts: true,
-      likes: true,
-      comments: true,
-    },
-    privacy: {
-      profileVisible: true,
-      activityVisible: true,
-      emailVisible: false,
-    },
+    defaultSort: "trending",
+    defaultView: "grid",
+    //
+    // notifications: {
+    //   email: true,
+    //   push: true,
+    //   newPosts: true,
+    //   likes: true,
+    //   comments: true,
+    // },
+    // privacy: {
+    //   profileVisible: true,
+    //   activityVisible: true,
+    //   emailVisible: false,
+    // },
   },
 };

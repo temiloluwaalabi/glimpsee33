@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { FeedQuery } from "@/lib/api/api";
+
 export interface Category {
   id: string;
   name: string;
@@ -48,10 +50,12 @@ export interface PrivacySettings {
   emailVisible: boolean;
 }
 export interface UserPreferences {
+  defaultView: "grid" | "list";
+  defaultSort: string;
   theme: "light" | "dark" | "system";
-  language: string;
-  notifications: NotificationSettings;
-  privacy: PrivacySettings;
+  // language: string;
+  // notifications: NotificationSettings;
+  // privacy: PrivacySettings;
 }
 
 export interface User {
@@ -66,22 +70,24 @@ export interface User {
 }
 
 export interface ApiResponse<T> {
-  status: boolean;
+  status?: boolean;
   message?: string;
-  [key: string]: T | string | boolean | undefined;
   success?: boolean;
   timestamp?: string;
+  [key: string]: T | string | boolean | undefined;
 }
 
 export interface PaginatedResponse<T> {
-  data: T[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-    hasNext: boolean;
-    hasPrev: boolean;
+  data: {
+    items: T[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+      hasNext: boolean;
+      hasPrev: boolean;
+    };
   };
   message: string;
   success: boolean;
@@ -132,11 +138,11 @@ export interface LoadingState {
 }
 
 export interface AppState {
+  // FEED STATE
+  filters: FeedQuery;
   user: User | null;
   isAuthenticated: boolean;
-  theme: "light" | "dark" | "system";
-  sidebarOpen: boolean;
-  searchFilters: SearchFilters;
+  preference: UserPreferences;
   toasts: Toast[];
   loading: Record<string, LoadingState>;
 }

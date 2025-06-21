@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosInstance } from "axios";
+import axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios";
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
@@ -140,7 +140,7 @@ const BASE_CONFIG = {
 
 export const apiClient: AxiosInstance = axios.create({
   ...BASE_CONFIG,
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_URL_URL,
 });
 
 export const setAuthToken = (token: string | null): void => {
@@ -219,8 +219,8 @@ const handleApiError = (error: AxiosError<unknown>) => {
  * Handles successful API responses.
  * Returns the response data directly, or wraps it if needed.
  */
-const handleApiSuccess = <T = unknown>(response: { data: T }) => {
-  return response.data;
+const handleApiSuccess = <T = unknown>(response: AxiosResponse<T>) => {
+  return response;
 };
 
 apiClient.interceptors.request.use(

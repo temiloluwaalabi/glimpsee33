@@ -1,17 +1,39 @@
-"use server";
-
 import { Category, FeedItem } from "@/types";
 
 import { ApiError } from "./api-client";
 import { makeApiRequest } from "./api-request-setup";
 
 export interface FeedQuery {
-  page?: number;
-  limit?: number;
-  category?: string;
-  search?: string;
-  featured?: boolean;
-  authorId?: string;
+  page: number;
+  limit: number;
+  category: string;
+  search: string;
+  globalSearch: string;
+  featured: boolean;
+  authorId: string;
+  startDate: string;
+  endDate: string;
+  viewMode: "grid" | "list";
+  sortBy: "newest" | "oldest" | "popular" | "trending";
+}
+
+export interface URLStateConfig extends Partial<FeedQuery> {
+  [key: string]: string | number | boolean | undefined;
+}
+
+export interface SearchFilters {
+  query: string;
+  limit: number;
+  page: number;
+  category: string;
+  tags: string[];
+  author: string;
+  dateRange: {
+    start: string;
+    end: string;
+  };
+  sortBy: "newest" | "oldest" | "popular" | "trending";
+  featured: boolean;
 }
 
 export interface PaginatedResponse<T> {
@@ -27,9 +49,17 @@ export interface PaginatedResponse<T> {
 }
 
 export const feedService = {
-  getFeedItems: async (query: FeedQuery = {}) => {
+  getFeedItems: async (
+    query: Partial<FeedQuery> = {},
+    options?: { searchKey?: string }
+  ) => {
+    const params = {
+      ...query,
+      ...(options?.searchKey ? { [options.searchKey]: query.search } : {}),
+    };
+
     const result = await makeApiRequest<{
-      data: FeedItem[];
+      items: FeedItem[];
       pagination: {
         page: number;
         limit: number;
@@ -37,11 +67,8 @@ export const feedService = {
         totalPages: number;
         hasMore: boolean;
       };
-      success: boolean;
     }>("/feed", "GET", {
-      params: {
-        ...query,
-      },
+      params,
     });
 
     if (result instanceof ApiError) {
