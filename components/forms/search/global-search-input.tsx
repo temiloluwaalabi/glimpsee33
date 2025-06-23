@@ -49,7 +49,7 @@ const GlobalSearchInput: React.FC<GlobalSearchInputProps> = ({
           value={searchQuery}
           onChange={handleInputChange}
           onClick={handleInputClick}
-          className="h-[48px] w-full rounded-md bg-white py-4 pr-6 pl-14 text-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+          className="h-[48px] w-full rounded-full bg-white py-4 pr-6 pl-14 text-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
         />
       </div>
 

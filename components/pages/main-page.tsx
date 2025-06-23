@@ -37,7 +37,7 @@ export const MainPage = (props: Props) => {
               <h1 className="mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-5xl font-bold text-transparent md:text-6xl">
                 Discover Amazing Content
               </h1>
-              <p className="mb-8 max-w-3xl text-xl text-gray-600 md:text-2xl dark:text-gray-300">
+              <p className="mb-8 max-w-3xl text-center text-xl text-gray-600 md:text-2xl dark:text-gray-300">
                 Your personal feed explorer for the best articles, insights, and
                 stories from around the web
               </p>
