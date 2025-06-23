@@ -92,7 +92,7 @@ const GlobalSearchDialog: React.FC<GlobalSearchDialogProps> = ({
       className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
       data-testid="global-search-dialog"
     >
-      <div className="flex min-h-screen items-center justify-center p-4 pt-[10vh]">
+      <div className="flex min-h-screen items-center justify-center p-4 pt-[4vh] md:pt-[10vh]">
         <div
           ref={searchRef}
           className="relative w-full max-w-2xl rounded-lg bg-white shadow-2xl dark:bg-gray-900"
