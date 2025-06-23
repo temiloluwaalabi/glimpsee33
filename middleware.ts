@@ -6,6 +6,7 @@ import {
   authRoutes,
   DEFAULT_LOGIN_REDIRECT,
   guestRoutes,
+  sharedRoutes,
 } from "./routes";
 
 // Helper function to validate and sanitize callback URLs
@@ -22,20 +23,22 @@ const sanitizeCallbackUrl = (url: string, base: string) => {
 export default async function middleware(req: NextRequest) {
   const { nextUrl } = req;
   const { pathname, origin, search } = nextUrl;
-
   const session = await getSession();
+  const isLoggedIn = session.isLoggedIn || false;
   console.log("SESSION", session);
   // Add error handling for session retrieval
 
-  const isLoggedIn = session?.isLoggedIn || false;
+  // Helper function to check if a path starts with any guest or shared route
+  const isAccessibleRoute = (pathname: string, routes: string[]) => {
+    return routes.some((route) => pathname.startsWith(route));
+  };
 
   const isAPiAuthRoute = pathname.startsWith(apiAuthPrefix);
   const isAuthRoute = authRoutes.includes(pathname);
   const isGuestRoute = guestRoutes.some((route) => pathname.endsWith(route));
+  const isSharedRoutes = isAccessibleRoute(pathname, sharedRoutes);
+  const privateRoute = !isGuestRoute && !isSharedRoutes;
 
-  const privateRoute = !isGuestRoute;
-
-  console.log("IS GUEST ROUTE", isGuestRoute);
   // Skip middleware for API auth routes
   if (isAPiAuthRoute) {
     return NextResponse.next();

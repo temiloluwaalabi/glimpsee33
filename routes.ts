@@ -12,9 +12,9 @@ export const guestRoutes = [
   "/register",
   "/verify-email",
   "/error",
-  "/api/feed",
-  "/api/categories",
 ];
+
+export const sharedRoutes = ["/api/feed", "/api/categories"];
 /**
  * An array of routes that are used for authentication
  * These routes will redirect logged in users to "/dashboard"
