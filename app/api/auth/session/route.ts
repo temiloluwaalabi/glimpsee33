@@ -8,19 +8,19 @@ import {
   SessionData,
   sessionOptions,
 } from "@/lib/auth/session";
-import { User } from "@/types";
 
-export async function POST(request: NextRequest, user: Partial<User>) {
+export async function POST(request: NextRequest) {
   const session = await getIronSession<SessionData>(
     await cookies(),
     sessionOptions
   );
   const current = mockCurrentUser;
 
-  //   const formData = await request.formData();
+  // Parse user data from request body
+  const user: { email: string; firstName: string } = await request.json();
 
   session.isLoggedIn = true;
-  session.firstName = user.name ?? "";
+  session.firstName = user.firstName ?? "";
   session.email = user.email ?? "";
   session.userId = current.id;
 
