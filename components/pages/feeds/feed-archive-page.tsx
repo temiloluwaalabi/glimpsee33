@@ -2,7 +2,7 @@
 
 import { Separator } from "@radix-ui/react-select";
 import { AnimatePresence, motion } from "framer-motion";
-import { Filter, Grid, List, Search, TrendingUp, X } from "lucide-react";
+import { ArrowUp, Filter, Grid, List, Search, X } from "lucide-react";
 import * as React from "react";
 import { useInView } from "react-intersection-observer";
 
@@ -81,6 +81,8 @@ const FeedItemSkeleton = ({ view = "grid" }: { view: "grid" | "list" }) => {
 };
 
 export const FeedArchivePage = ({ category }: { category?: string }) => {
+  const [showScrollTop, setShowScrollTop] = React.useState(false);
+
   const feedState = useFeedState();
   const {
     filters,
@@ -123,6 +125,20 @@ export const FeedArchivePage = ({ category }: { category?: string }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [localSearchQuery]);
 
+  // Handle scroll for reading progress and scroll-to-top Button
+  React.useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+
+      setShowScrollTop(scrollTop > 500);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
   // Infinite query for feed items
   const {
     data,
@@ -239,7 +255,7 @@ export const FeedArchivePage = ({ category }: { category?: string }) => {
           <div className="flex flex-col gap-4 lg:flex-row">
             {/* Enhanced Search Bar */}
             <div className="group relative flex-1">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+              <div className="pointer-events-none absolute inset-y-0 left-0 -mt-2 flex items-center pl-4">
                 <Search className="h-5 w-5 text-gray-400 transition-colors group-focus-within:text-blue-500" />
               </div>
               <Input
@@ -250,8 +266,9 @@ export const FeedArchivePage = ({ category }: { category?: string }) => {
               />
               {localSearchQuery && (
                 <Button
+                  variant={"link"}
                   onClick={handleClearSearch}
-                  className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600"
+                  className="absolute inset-y-0 right-0 mt-2 mr-4 flex items-center !p-0 pr-4 text-gray-400 hover:text-gray-600"
                   aria-label="Clear search"
                 >
                   <X className="h-5 w-5" />
@@ -260,12 +277,11 @@ export const FeedArchivePage = ({ category }: { category?: string }) => {
             </div>
 
             {/* Controls */}
-            <div className="flex items-center gap-3">
+            <div className="mb-2 flex items-center gap-3">
               {/* Sort Dropdown */}
               <Select value={filters.sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="!h-12 w-44 cursor-pointer rounded-xl border-2 border-gray-200 bg-white/50 backdrop-blur-sm">
                   <div className="flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4" />
                     <SelectValue placeholder="Sort by" />
                   </div>
                 </SelectTrigger>
@@ -370,7 +386,7 @@ export const FeedArchivePage = ({ category }: { category?: string }) => {
                     variant="ghost"
                     size="sm"
                     onClick={resetFilters}
-                    className="h-6 px-2 text-gray-500 hover:text-gray-700"
+                    className="h-6 cursor-pointer px-2 text-gray-500 hover:text-gray-700"
                   >
                     Clear all
                   </Button>
@@ -488,6 +504,20 @@ export const FeedArchivePage = ({ category }: { category?: string }) => {
             )}
           </div>
         )}
+        {/* Scroll to Top Button */}
+        <AnimatePresence>
+          {showScrollTop && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              onClick={scrollToTop}
+              className="fixed right-4 bottom-4 z-50 rounded-full bg-blue-500 p-2 text-white shadow-lg transition-colors hover:bg-blue-600 sm:right-8 sm:bottom-8 sm:p-3"
+            >
+              <ArrowUp className="h-5 w-5 sm:h-6 sm:w-6" />
+            </motion.button>
+          )}
+        </AnimatePresence>
       </MaxWidthContainer>
     </section>
   );

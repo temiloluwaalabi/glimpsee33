@@ -194,6 +194,7 @@ export default async function RootLayout({
             <Navbar />
             {children}
             <Footer />
+            {/* <BackToTop /> */}
             <MobileBottomNavigation />
           </Providers>
         </ThemeProvider>

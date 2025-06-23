@@ -153,7 +153,7 @@ export const Navbar = () => {
                       );
                     })}
                     {!isAuthenticated && (
-                      <div className="space-y-2 border-t border-gray-200 pt-3 dark:border-gray-700">
+                      <div className="gap-2 border-t border-gray-200 pt-3 dark:border-gray-700">
                         <SheetClose>
                           <Button
                             data-testid="mobile-sign-in-button"
