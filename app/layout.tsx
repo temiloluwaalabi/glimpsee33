@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import NextTopLoader from "nextjs-toploader";
 import React from "react";
 
 import MobileBottomNavigation from "@/components/layout/bottom-nav";
@@ -187,6 +188,8 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <Providers>
+            <NextTopLoader color="#216015" showSpinner={false} />
+
             <Toaster richColors expand />
             <Navbar />
             {children}
