@@ -291,8 +291,6 @@ export const makeApiRequest = async <T>(
               params,
             }
           );
-
-          // console.log("API_REQUEST_RESPONSE", response)
         } else {
           // For FormData with files or other endpoints - keep as multipart/form-data
           response = await apiClient.post<ApiResponse<T>>(endpoint, body, {
@@ -322,13 +320,6 @@ export const makeApiRequest = async <T>(
     }
 
     const extractedData = extractNestedData(data, dataKey);
-
-    // Log extraction for debugging
-    // console.log("Data extraction:", {
-    //   dataKey,
-    //   extractedData,
-    //   fullResponse: data,
-    // });
 
     return {
       success: true,

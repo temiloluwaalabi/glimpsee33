@@ -13,7 +13,6 @@ export const handlers = [
     // simulate network delay
     await delay(800);
 
-    console.log("Mocker is used");
     const url = new URL(request.url);
     const page = parseInt(url.searchParams.get("page") || "1");
     const limit = parseInt(url.searchParams.get("limit") || "10");

@@ -33,12 +33,7 @@ export const useURLState = () => {
 
       const current = getURLParams();
 
-      console.log("CURRENT", current);
-      console.log("PARAMS", newParams);
-
       const merged = { ...current, ...newParams };
-
-      console.log("MERGED", merged);
 
       // REMOVE UNDEFINED/NULL VALUES OR EMPTY STRINGS
       Object.keys(merged).forEach((key) => {
@@ -63,7 +58,6 @@ export const useURLState = () => {
         ? `${pathname}?${urlSearchParams.toString()}`
         : pathname;
 
-      console.log("NEW URL", newURL);
       if (replace) {
         router.replace(newURL, { scroll });
       } else {

@@ -40,8 +40,6 @@ export const FeedItemCard = ({ item, view }: Props) => {
   const [isSaved, setIsSaved] = useState<boolean>(isBookmared || false);
   const [likesCount, setLikesCount] = useState(item.likes);
 
-  console.log("ISAVED", isLiked);
-
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -85,7 +83,6 @@ export const FeedItemCard = ({ item, view }: Props) => {
 
       // Access the correct property based on your API response structure
       const resultData = result.data as BookmarkFeedItemResponse;
-      console.log("RESULT DATA", resultData.isBookmarked);
 
       if (isSaved === true) {
         setIsSaved(false); // Also set this to false when unbookmarked

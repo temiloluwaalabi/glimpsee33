@@ -156,7 +156,6 @@ export const FeedArchivePage = ({ category }: { category?: string }) => {
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  console.log("DATA", data);
   // Get all feed items from pages with better error handling
   const allItems = React.useMemo(() => {
     if (!data?.pages) return [];

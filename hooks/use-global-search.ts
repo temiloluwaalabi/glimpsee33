@@ -26,7 +26,6 @@ export const useGlobalSearch = (query: Partial<GlobalSearchQuery> = {}) => {
   return useQuery({
     queryKey: ["globalSearch", query.search, query.type],
     queryFn: async (): Promise<GlobalSearchResult> => {
-      console.log("SEARCH GLOBAL query", query);
       if (!query.search?.trim()) {
         return {
           feedItems: [],
@@ -44,7 +43,6 @@ export const useGlobalSearch = (query: Partial<GlobalSearchQuery> = {}) => {
             search: query.search,
           });
           const data = result.data as FeedItem[];
-          console.log("RESULT", result);
           promises.push(
             Promise.resolve({
               data,

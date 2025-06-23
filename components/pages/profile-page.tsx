@@ -30,7 +30,6 @@ const ProfilePage = (props: Props) => {
   const [activeTab, setActiveTab] = useState("articles");
   const [isEditing, setIsEditing] = useState(false);
 
-  console.log("ALL FEEDS", props.allFeeds);
   const feedsByUser = props.allFeeds.filter(
     (item) => item.author.id === props.user.id
   );

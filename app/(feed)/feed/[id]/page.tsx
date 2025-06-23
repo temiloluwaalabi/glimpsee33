@@ -112,7 +112,6 @@ export default async function ServerFeedDetailsPage({
 
   const feeds = allFeeds.data as FeedItem[];
   const feedData = feed.data as FeedItem;
-  console.log("FEED DATA", feedData);
   if (!feedData) {
     return notFound();
   }

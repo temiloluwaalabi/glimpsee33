@@ -66,7 +66,6 @@ export const feedService = {
       ...(options?.searchKey ? { [options.searchKey]: query.search } : {}),
     };
 
-    console.log("FEED SERVE query", query);
     const result = await makeApiRequest<{
       items: FeedItem[];
       pagination: {
@@ -88,7 +87,6 @@ export const feedService = {
   },
 
   getFeedItem: async (id: string) => {
-    console.log("ID", id);
     const result = await makeApiRequest<FeedItem>(`/feed/${id}`, "GET");
 
     if (result instanceof ApiError) {
@@ -145,7 +143,6 @@ export const categoryService = {
     return result;
   },
   getCategoryItem: async (id: string) => {
-    console.log("ID", id);
     const result = await makeApiRequest<FeedItem>(`/categories/${id}`, "GET");
 
     if (result instanceof ApiError) {

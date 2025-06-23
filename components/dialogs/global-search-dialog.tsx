@@ -31,7 +31,6 @@ const GlobalSearchDialog: React.FC<GlobalSearchDialogProps> = ({
 
   const debouncedQuery = useDebounce(searchQuery, 300);
 
-  console.log("DEBOUCED searchQuery", debouncedQuery);
   const {
     data: results,
     isLoading,

@@ -7,7 +7,6 @@ import * as React from "react";
 import { mockAuthors } from "@/config/constants/mockdata";
 import { allRoutes } from "@/config/constants/routes";
 import { formatDate } from "@/lib/utils";
-import { useAppStore } from "@/store/use-app-store";
 import { Category, FeedItem } from "@/types";
 
 import { FeedItemCard } from "../cards/feed-item-card";
@@ -27,10 +26,6 @@ type Props = {
   allCategories: Category[];
 };
 export const MainPage = (props: Props) => {
-  //   const { isLoading, data: feedItems } = useFeedItems();
-  const { user } = useAppStore();
-  console.log("USER", user);
-
   const clientFeedItems = props.allFeeds;
   return (
     <>

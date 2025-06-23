@@ -91,7 +91,6 @@ export const FavouriteArchivePage = () => {
     );
   }
 
-  console.log("Bookmarkedfeeds", Bookmarkedfeeds);
   return (
     <section className="min-h-screen bg-gradient-to-br">
       <MaxWidthContainer className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">

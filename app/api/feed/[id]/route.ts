@@ -11,7 +11,6 @@ export async function GET(
 
     const feedItem = allMockFeedItems.find((item) => item.id === id);
 
-    console.log("FEED ITEM", feedItem);
     if (!feedItem) {
       return NextResponse.json(
         { message: "Feed item not found" },

@@ -33,7 +33,6 @@ export default async function middleware(req: NextRequest) {
     session = { isLoggedIn: false };
   }
 
-  console.log("SESSION", session);
   const isLoggedIn = session?.isLoggedIn || false;
 
   const isAPiAuthRoute = pathname.startsWith(apiAuthPrefix);
@@ -43,10 +42,6 @@ export default async function middleware(req: NextRequest) {
 
   const privateRoute = !isGuestRoute;
 
-  console.log("isPrivate", privateRoute);
-  console.log("isLoggedIn", isLoggedIn);
-  console.log("pathname", pathname);
-
   // Skip middleware for API auth routes
   if (isAPiAuthRoute) {
     return NextResponse.next();
@@ -54,8 +49,6 @@ export default async function middleware(req: NextRequest) {
 
   // Redirect unauthenticated users from private routes to login
   if (privateRoute && !isLoggedIn) {
-    console.log("Not logged in, redirecting to login");
-
     const sanitizedCallback = sanitizeCallbackUrl(
       `${pathname}${search}`,
       origin
@@ -70,7 +63,6 @@ export default async function middleware(req: NextRequest) {
 
   // Prevent logged-in users from accessing auth pages (login/signup)
   if (isAuthRoute && isLoggedIn) {
-    console.log("Already logged in, redirecting from auth route");
     return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, origin));
   }
 

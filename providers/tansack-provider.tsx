@@ -5,14 +5,14 @@ import type * as React from "react";
 
 import { getQueryClient } from "@/app/get-query-client";
 
-// import { MSWProvider } from "./msw-provider";
+import { MSWProvider } from "./msw-provider";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
 
   return (
     <QueryClientProvider client={queryClient}>
-      {children}
+      <MSWProvider>{children}</MSWProvider>
       {/* <ReactQueryDevtools /> */}
     </QueryClientProvider>
   );

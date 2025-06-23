@@ -6,7 +6,6 @@ import { FeedItem, PaginatedResponse } from "@/types";
 
 export async function GET(request: NextRequest) {
   try {
-    console.log("API ROUTE USED");
     const { searchParams } = new URL(request.url);
 
     const query: Partial<FeedQuery> = {
@@ -114,7 +113,6 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString(),
     };
 
-    // console.log("RESPONSE", response);
     return NextResponse.json(response, {
       status: 200,
     });

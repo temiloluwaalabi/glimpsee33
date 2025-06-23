@@ -63,8 +63,6 @@ jest.mock("@/components/dialogs/global-search-dialog", () => {
     onClose: () => void;
     initialQuery: string;
   }) {
-    console.log("Dialog props:", isOpen);
-
     if (!isOpen) return null;
 
     return (

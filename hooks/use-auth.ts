@@ -43,8 +43,6 @@ export const useAuth = () => {
       },
       onSuccess: (response) => {
         const user = response.rawResponse?.user as Partial<User>;
-        console.log("RESPONSE", response);
-        console.log("MUTATION USER", user);
         LoginStore(user);
         queryClient.setQueryData(["auth", "me"], user);
         toast.success(

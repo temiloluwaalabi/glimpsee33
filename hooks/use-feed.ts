@@ -228,7 +228,6 @@ export function useInvalidatedFeeds() {
 
 export const useGetBookmarkedFeeds = (enabled: true) => {
   const { getBookmarkIds } = useAppStore();
-  console.log("BOOKMARK IDS", getBookmarkIds());
 
   return useQuery({
     queryKey: ["bookmarked-feeds", getBookmarkIds()],
