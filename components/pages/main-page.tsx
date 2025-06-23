@@ -182,7 +182,7 @@ export const MainPage = (props: Props) => {
                           <div className="py-8">
                             <div className="mb-4 flex items-center justify-between space-x-4">
                               <div className="space-x-2">
-                                <span className="rounded-full bg-blue-600 px-3 py-1 text-sm font-medium text-white">
+                                <span className="rounded-full bg-blue-600 px-3 py-1 text-sm font-medium text-blue-600 md:text-white">
                                   Featured
                                 </span>
                                 <span className="relative rounded-md bg-blue-100 px-4 py-1 text-sm font-medium text-blue-600 dark:text-blue-400">
