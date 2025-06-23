@@ -21,6 +21,7 @@ import { useGetBookmarkedFeeds } from "@/hooks/use-feed";
 import { FeedItem, User } from "@/types";
 
 import { FeedItemCard } from "../cards/feed-item-card";
+import { Button } from "../ui/button";
 
 type Props = {
   user: User;
@@ -111,20 +112,20 @@ const ProfilePage = (props: Props) => {
                 </div>
 
                 <div className="mt-4 flex gap-3 md:mt-0">
-                  <button
+                  <Button
                     onClick={() => setIsEditing(!isEditing)}
-                    className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+                    className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs text-white transition-colors hover:bg-blue-700 md:text-sm"
                   >
                     <Edit3 className="h-4 w-4" />
                     Edit Profile
-                  </button>
-                  <button className="flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 transition-colors hover:bg-gray-50">
+                  </Button>
+                  <Button className="flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-xs transition-colors hover:bg-gray-50 md:text-sm">
                     <Share2 className="h-4 w-4" />
                     Share
-                  </button>
-                  <button className="rounded-lg border border-gray-300 p-2 transition-colors hover:bg-gray-50">
+                  </Button>
+                  <Button className="rounded-lg border border-gray-300 p-2 transition-colors hover:bg-gray-50">
                     <MoreHorizontal className="h-4 w-4" />
-                  </button>
+                  </Button>
                 </div>
               </div>
 
