@@ -5,6 +5,7 @@
  */
 
 export const guestRoutes = [
+  "/",
   "/forgot-password",
   "/login",
   "/reset-password",
