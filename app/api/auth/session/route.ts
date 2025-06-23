@@ -8,14 +8,9 @@ import {
   SessionData,
   sessionOptions,
 } from "@/lib/auth/session";
+import { User } from "@/types";
 
-export async function POST(
-  request: NextRequest,
-  user: {
-    email: string;
-    firstName: string;
-  }
-) {
+export async function POST(request: NextRequest, user: Partial<User>) {
   const session = await getIronSession<SessionData>(
     await cookies(),
     sessionOptions
@@ -25,8 +20,8 @@ export async function POST(
   //   const formData = await request.formData();
 
   session.isLoggedIn = true;
-  session.firstName = user.firstName;
-  session.email = user.email;
+  session.firstName = user.name ?? "";
+  session.email = user.email ?? "";
   session.userId = current.id;
 
   await session.save();
