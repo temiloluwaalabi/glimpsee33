@@ -23,25 +23,19 @@ export default async function middleware(req: NextRequest) {
   const { nextUrl } = req;
   const { pathname, origin, search } = nextUrl;
 
+  const session = await getSession();
+  console.log("SESSION", session);
   // Add error handling for session retrieval
-  let session;
-  try {
-    session = await getSession();
-  } catch (error) {
-    console.error("Failed to get session:", error);
-    // If session retrieval fails, treat as not logged in
-    session = { isLoggedIn: false };
-  }
 
   const isLoggedIn = session?.isLoggedIn || false;
 
   const isAPiAuthRoute = pathname.startsWith(apiAuthPrefix);
   const isAuthRoute = authRoutes.includes(pathname);
-
   const isGuestRoute = guestRoutes.some((route) => pathname.endsWith(route));
 
   const privateRoute = !isGuestRoute;
 
+  console.log("IS GUEST ROUTE", isGuestRoute);
   // Skip middleware for API auth routes
   if (isAPiAuthRoute) {
     return NextResponse.next();
@@ -71,5 +65,5 @@ export default async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!.\\..|_next).)", "/", "/(api|trpc)(.)"],
+  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
 };

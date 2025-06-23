@@ -11,7 +11,6 @@ export async function GET(
 
     const category = mockCategories.find((item) => item.id === id);
 
-    console.log("CATEGORY", category);
     if (!category) {
       return NextResponse.json(
         { message: "category not found" },

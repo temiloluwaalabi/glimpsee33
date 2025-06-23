@@ -12,6 +12,8 @@ export const guestRoutes = [
   "/register",
   "/verify-email",
   "/error",
+  "/api/feed",
+  "/api/categories",
 ];
 /**
  * An array of routes that are used for authentication

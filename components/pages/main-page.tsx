@@ -94,159 +94,162 @@ export const MainPage = (props: Props) => {
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             {/* Main Featured Post */}
             <div className="flex flex-col justify-between space-y-4 lg:col-span-2">
-              <div
-                className={`'dark:bg-gray-800' bg-white'} relative overflow-hidden rounded-2xl shadow-xl`}
-              >
-                <div className="relative h-[200px] w-full">
-                  <Image
-                    fill
-                    src={
-                      clientFeedItems[0].thumbnail ||
-                      "https://res.cloudinary.com/davidleo/image/upload/v1710934057/cruiseair/g-1165680144-budapest-hungary-danube-river_jwwxqh.jpg"
-                    }
-                    alt={clientFeedItems[0].title}
-                    className="h-80 w-full object-cover"
-                  />
-                </div>
-                <div className="absolute top-4 left-4">
-                  <span className="rounded-full bg-blue-600 px-3 py-1 text-sm font-medium text-white">
-                    Featured
-                  </span>
-                </div>
-                <div className="p-8">
-                  <div className="mb-4 flex items-center justify-between space-x-4">
-                    <span className="relative rounded-md bg-purple-200 px-2 py-1 text-sm font-medium text-purple-600 dark:text-purple-400">
-                      <Link
-                        className="absolute top-0 left-0 z-50 size-full"
-                        href={`${allRoutes.feeds.url}?category=${props.allCategories.find((cat) => cat.name.toLowerCase() === clientFeedItems[0].category.toLowerCase())?.id}`}
-                      />
+              {clientFeedItems[0] && (
+                <div
+                  className={`'dark:bg-gray-800' bg-white'} relative overflow-hidden rounded-2xl shadow-xl`}
+                >
+                  <div className="relative h-[200px] w-full">
+                    <Image
+                      fill
+                      src={
+                        clientFeedItems[0].thumbnail ||
+                        "https://res.cloudinary.com/davidleo/image/upload/v1710934057/cruiseair/g-1165680144-budapest-hungary-danube-river_jwwxqh.jpg"
+                      }
+                      alt={clientFeedItems[0].title}
+                      className="h-80 w-full object-cover"
+                    />
+                  </div>
+                  <div className="absolute top-4 left-4">
+                    <span className="rounded-full bg-blue-600 px-3 py-1 text-sm font-medium text-white">
+                      Featured
+                    </span>
+                  </div>
+                  <div className="p-8">
+                    <div className="mb-4 flex items-center justify-between space-x-4">
+                      <span className="relative rounded-md bg-purple-200 px-2 py-1 text-sm font-medium text-purple-600 dark:text-purple-400">
+                        <Link
+                          className="absolute top-0 left-0 z-50 size-full"
+                          href={`${allRoutes.feeds.url}?category=${props.allCategories.find((cat) => cat.name.toLowerCase() === clientFeedItems[0].category.toLowerCase())?.id}`}
+                        />
 
-                      {clientFeedItems[0].category}
-                    </span>
-                    <span className="text-sm text-gray-400">
-                      {clientFeedItems[0].readTime} min read
-                    </span>
-                  </div>
-                  <Link
-                    href={`${allRoutes.feeds.url}/${clientFeedItems[0].id}`}
-                    className="mb-3 cursor-pointer text-2xl font-bold transition-colors hover:text-blue-600 dark:hover:text-blue-400"
-                  >
-                    {clientFeedItems[0].title}
-                  </Link>
-                  <p className="mb-6 line-clamp-2 text-gray-600 dark:text-gray-400">
-                    {clientFeedItems[0].description.length > 120
-                      ? clientFeedItems[0].description.slice(0, 120) + "..."
-                      : clientFeedItems[0].description}
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-500 font-bold text-white">
-                        {clientFeedItems[0].author.name.charAt(0)}
-                      </div>
-                      <div>
-                        <p className="font-medium">
-                          {clientFeedItems[0].author.name}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {formatDate(clientFeedItems[0].publishedAt)}
-                        </p>
-                      </div>
+                        {clientFeedItems[0].category}
+                      </span>
+                      <span className="text-sm text-gray-400">
+                        {clientFeedItems[0].readTime} min read
+                      </span>
                     </div>
-                    <div className="flex items-center space-x-4 text-gray-500">
-                      <div className="flex items-center space-x-1">
-                        <Eye className="h-4 w-4" />
-                        <span className="text-sm">
-                          {clientFeedItems[0].views}
-                        </span>
+                    <Link
+                      href={`${allRoutes.feeds.url}/${clientFeedItems[0].id}`}
+                      className="mb-3 cursor-pointer text-2xl font-bold transition-colors hover:text-blue-600 dark:hover:text-blue-400"
+                    >
+                      {clientFeedItems[0].title}
+                    </Link>
+                    <p className="mb-6 line-clamp-2 text-gray-600 dark:text-gray-400">
+                      {clientFeedItems[0].description.length > 120
+                        ? clientFeedItems[0].description.slice(0, 120) + "..."
+                        : clientFeedItems[0].description}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-500 font-bold text-white">
+                          {clientFeedItems[0].author.name.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="font-medium">
+                            {clientFeedItems[0].author.name}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {formatDate(clientFeedItems[0].publishedAt)}
+                          </p>
+                        </div>
                       </div>
-                      <button className="transition-colors hover:text-red-500">
-                        <Heart className="h-4 w-4" />
-                      </button>
-                      <button className="transition-colors hover:text-blue-500">
-                        <Share2 className="h-4 w-4" />
-                      </button>
+                      <div className="flex items-center space-x-4 text-gray-500">
+                        <div className="flex items-center space-x-1">
+                          <Eye className="h-4 w-4" />
+                          <span className="text-sm">
+                            {clientFeedItems[0].views}
+                          </span>
+                        </div>
+                        <button className="transition-colors hover:text-red-500">
+                          <Heart className="h-4 w-4" />
+                        </button>
+                        <button className="transition-colors hover:text-blue-500">
+                          <Share2 className="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
               <div className="space-y-4">
-                {clientFeedItems
-                  .filter((item) => item.featured === false)
-                  .slice(0, 2)
-                  .map((item) => (
-                    <div className="grid grid-cols-12 gap-4" key={item.id}>
-                      <div className="col-span-12 rounded-md border border-blue-300 bg-blue-50 p-3 md:col-span-8 md:border-none md:bg-transparent">
-                        <div className="py-8">
-                          <div className="mb-4 flex items-center justify-between space-x-4">
-                            <div className="space-x-2">
-                              <span className="rounded-full bg-blue-600 px-3 py-1 text-sm font-medium text-white">
-                                Featured
-                              </span>
-                              <span className="relative rounded-md bg-blue-100 px-4 py-1 text-sm font-medium text-blue-600 dark:text-blue-400">
-                                <Link
-                                  className="absolute top-0 left-0 z-50 size-full"
-                                  href={`${allRoutes.feeds.url}?category=${props.allCategories.find((cat) => cat.name.toLowerCase() === item.category.toLowerCase())?.id}`}
-                                />
-                                {item.category}
+                {clientFeedItems.length > 0 &&
+                  clientFeedItems
+                    .filter((item) => item.featured === false)
+                    .slice(0, 2)
+                    .map((item) => (
+                      <div className="grid grid-cols-12 gap-4" key={item.id}>
+                        <div className="col-span-12 rounded-md border border-blue-300 bg-blue-50 p-3 md:col-span-8 md:border-none md:bg-transparent">
+                          <div className="py-8">
+                            <div className="mb-4 flex items-center justify-between space-x-4">
+                              <div className="space-x-2">
+                                <span className="rounded-full bg-blue-600 px-3 py-1 text-sm font-medium text-white">
+                                  Featured
+                                </span>
+                                <span className="relative rounded-md bg-blue-100 px-4 py-1 text-sm font-medium text-blue-600 dark:text-blue-400">
+                                  <Link
+                                    className="absolute top-0 left-0 z-50 size-full"
+                                    href={`${allRoutes.feeds.url}?category=${props.allCategories.find((cat) => cat.name.toLowerCase() === item.category.toLowerCase())?.id}`}
+                                  />
+                                  {item.category}
+                                </span>
+                              </div>
+                              <span className="text-sm text-gray-400">
+                                {item.readTime} min read
                               </span>
                             </div>
-                            <span className="text-sm text-gray-400">
-                              {item.readTime} min read
-                            </span>
-                          </div>
-                          <Link
-                            href={`${allRoutes.feeds.url}/${item.id}`}
-                            className="mb-3 cursor-pointer text-2xl font-bold transition-colors hover:text-blue-600 dark:hover:text-blue-400"
-                          >
-                            {item.title}
-                          </Link>
-                          <p className="mb-6 line-clamp-2 text-gray-600 dark:text-gray-400">
-                            {item.description.length > 120
-                              ? item.description.slice(0, 120) + "..."
-                              : item.description}
-                          </p>
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-3">
-                              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-500 font-bold text-white">
-                                {item.author.name.charAt(0)}
+                            <Link
+                              href={`${allRoutes.feeds.url}/${item.id}`}
+                              className="mb-3 cursor-pointer text-2xl font-bold transition-colors hover:text-blue-600 dark:hover:text-blue-400"
+                            >
+                              {item.title}
+                            </Link>
+                            <p className="mb-6 line-clamp-2 text-gray-600 dark:text-gray-400">
+                              {item.description.length > 120
+                                ? item.description.slice(0, 120) + "..."
+                                : item.description}
+                            </p>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-3">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-500 font-bold text-white">
+                                  {item.author.name.charAt(0)}
+                                </div>
+                                <div>
+                                  <p className="font-medium">
+                                    {item.author.name}
+                                  </p>
+                                  <p className="text-sm text-gray-500">
+                                    {formatDate(item.publishedAt)}
+                                  </p>
+                                </div>
                               </div>
-                              <div>
-                                <p className="font-medium">
-                                  {item.author.name}
-                                </p>
-                                <p className="text-sm text-gray-500">
-                                  {formatDate(item.publishedAt)}
-                                </p>
+                              <div className="flex items-center space-x-4 text-gray-500">
+                                <div className="flex items-center space-x-1">
+                                  <Eye className="h-4 w-4" />
+                                  <span className="text-sm">{item.views}</span>
+                                </div>
+                                <button className="transition-colors hover:text-red-500">
+                                  <Heart className="h-4 w-4" />
+                                </button>
+                                <button className="transition-colors hover:text-blue-500">
+                                  <Share2 className="h-4 w-4" />
+                                </button>
                               </div>
-                            </div>
-                            <div className="flex items-center space-x-4 text-gray-500">
-                              <div className="flex items-center space-x-1">
-                                <Eye className="h-4 w-4" />
-                                <span className="text-sm">{item.views}</span>
-                              </div>
-                              <button className="transition-colors hover:text-red-500">
-                                <Heart className="h-4 w-4" />
-                              </button>
-                              <button className="transition-colors hover:text-blue-500">
-                                <Share2 className="h-4 w-4" />
-                              </button>
                             </div>
                           </div>
                         </div>
+                        <div className="relative col-span-12 size-full md:col-span-4">
+                          <Image
+                            fill
+                            src={
+                              item.thumbnail ||
+                              "https://res.cloudinary.com/davidleo/image/upload/v1710934057/cruiseair/g-1165680144-budapest-hungary-danube-river_jwwxqh.jpg"
+                            }
+                            alt={item.title}
+                            className="h-[20px] w-full rounded-md object-cover md:h-80"
+                          />
+                        </div>
                       </div>
-                      <div className="relative col-span-12 size-full md:col-span-4">
-                        <Image
-                          fill
-                          src={
-                            item.thumbnail ||
-                            "https://res.cloudinary.com/davidleo/image/upload/v1710934057/cruiseair/g-1165680144-budapest-hungary-danube-river_jwwxqh.jpg"
-                          }
-                          alt={item.title}
-                          className="h-[20px] w-full rounded-md object-cover md:h-80"
-                        />
-                      </div>
-                    </div>
-                  ))}
+                    ))}
               </div>
             </div>
 
