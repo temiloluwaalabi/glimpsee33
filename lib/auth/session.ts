@@ -14,12 +14,18 @@ export const defaultSession: SessionData = {
 };
 
 export const sessionOptions: SessionOptions = {
-  password: process.env.SECRET_KEY!,
   cookieName: "feed-explorer-session",
+  password: process.env.SECRET_KEY as string,
   cookieOptions: {
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
-    maxAge: 60 * 60 * 24 * 7, // 7 days
     sameSite: "strict",
+    path: "/",
+    maxAge: 3600,
   },
 };
+declare module "iron-session" {
+  interface IronSessionData {
+    user?: SessionData;
+  }
+}

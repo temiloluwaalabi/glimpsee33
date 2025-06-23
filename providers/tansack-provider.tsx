@@ -11,8 +11,8 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
 
   return (
-    <MSWProvider>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </MSWProvider>
+    <QueryClientProvider client={queryClient}>
+      <MSWProvider>{children}</MSWProvider>
+    </QueryClientProvider>
   );
 }

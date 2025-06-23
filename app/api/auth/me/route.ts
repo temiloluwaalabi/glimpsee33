@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
 
 import { getSession } from "@/app/actions/session.action";
-import { findUserById } from "@/app/actions/users.action";
+import { mockAuthors } from "@/config/constants/mockdata";
 
 export async function GET() {
   try {
     const session = await getSession();
-    const user = findUserById(session.userId);
-
+    const user = mockAuthors.find((author) => author.email === session.email);
     if (!user) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }

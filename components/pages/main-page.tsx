@@ -32,12 +32,12 @@ export const MainPage = (props: Props) => {
       <MaxWidthContainer className="relative">
         <section className="overflow-hidden py-20">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-900"></div>
-          <div className="relative mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              <h1 className="mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-4xl font-bold text-transparent md:text-6xl">
+              <h1 className="mb-6 bg-red-900 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-4xl font-bold text-transparent md:text-6xl">
                 Discover Amazing Content
               </h1>
-              <p className="mx-auto mb-8 max-w-3xl text-xl text-gray-600 md:text-2xl dark:text-gray-300">
+              <p className="mb-8 max-w-3xl text-xl text-gray-600 md:text-2xl dark:text-gray-300">
                 Your personal feed explorer for the best articles, insights, and
                 stories from around the web
               </p>

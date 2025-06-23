@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
   // Parse user data from request body
   const user: { email: string; firstName: string } = await request.json();
 
+  console.log("SESSION ROUTE USER", user);
   session.isLoggedIn = true;
   session.firstName = user.firstName ?? "";
   session.email = user.email ?? "";
@@ -34,6 +35,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
+  console.log("SESSION GET CALLED");
   const session = await getIronSession<SessionData>(
     await cookies(),
     sessionOptions

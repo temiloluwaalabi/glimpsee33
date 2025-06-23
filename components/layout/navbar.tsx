@@ -154,26 +154,30 @@ export const Navbar = () => {
                     })}
                     {!isAuthenticated && (
                       <div className="space-y-2 border-t border-gray-200 pt-3 dark:border-gray-700">
-                        <Button
-                          data-testid="mobile-sign-in-button"
-                          className="relative rounded-lg border border-blue-600 bg-transparent px-4 py-2 font-medium text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-                        >
-                          Sign In
-                          <Link
-                            className="absolute top-0 left-0 z-50 size-full"
-                            href={allRoutes.login.url}
-                          />
-                        </Button>
-                        <Button
-                          data-testid="mobile-sign-up-button"
-                          className="relative block rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700"
-                        >
-                          Sign Up
-                          <Link
-                            className="absolute top-0 left-0 z-50 size-full"
-                            href={allRoutes.register.url}
-                          />
-                        </Button>
+                        <SheetClose>
+                          <Button
+                            data-testid="mobile-sign-in-button"
+                            className="relative rounded-lg border border-blue-600 bg-transparent px-4 py-2 font-medium text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                          >
+                            Sign In
+                            <Link
+                              className="absolute top-0 left-0 z-50 size-full"
+                              href={allRoutes.login.url}
+                            />
+                          </Button>
+                        </SheetClose>
+                        <SheetClose>
+                          <Button
+                            data-testid="mobile-sign-up-button"
+                            className="relative block rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700"
+                          >
+                            Sign Up
+                            <Link
+                              className="absolute top-0 left-0 z-50 size-full"
+                              href={allRoutes.register.url}
+                            />
+                          </Button>
+                        </SheetClose>
                       </div>
                     )}
                   </div>

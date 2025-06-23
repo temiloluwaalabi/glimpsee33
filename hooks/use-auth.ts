@@ -43,8 +43,10 @@ export const useAuth = () => {
       },
       onSuccess: (response) => {
         const user = response.rawResponse?.user as Partial<User>;
+
         LoginStore(user);
         queryClient.setQueryData(["auth", "me"], user);
+
         toast.success(
           typeof response?.message === "string"
             ? response.message

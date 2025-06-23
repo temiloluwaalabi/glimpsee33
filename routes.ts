@@ -33,6 +33,8 @@ export const authRoutes = [
  * @type {string}
  */
 export const apiAuthPrefix = "/api/auth";
+export const apiFeedPrefix = "/api/feed";
+export const apiCatPrefix = "/api/categories";
 
 /**
  * The default redirect path after logging in

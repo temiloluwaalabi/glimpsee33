@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { loginSession } from "@/app/actions/session.action";
-import { findUserByEmail, validatePassword } from "@/app/actions/users.action";
+import { mockCurrentUser } from "@/config/constants/mockdata";
 import { User } from "@/types";
 
 export async function POST(request: NextRequest) {
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user
-    const user = findUserByEmail(email);
+    const user = mockCurrentUser;
     if (!user) {
       return NextResponse.json(
         { error: "Invalid email or password" },
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate password
-    if (!validatePassword(password, user.password ?? "")) {
+    if (user.password !== password) {
       return NextResponse.json(
         { error: "Invalid email or password" },
         { status: 401 }

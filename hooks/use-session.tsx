@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -21,6 +20,8 @@ export async function fetchJSON<JSON = unknown>(
     ...init,
   }).then((res) => {
     if (!res.ok) {
+      // Don't throw for 401 - it just means not authenticated
+
       // toast(`Error: ${res.statusText}`);
       throw new Error(`Error: ${res.statusText}`);
     }
@@ -52,19 +53,6 @@ export default function useSession() {
 
     fetchSession();
   }, []);
-
-  // // Update the session and lastActivity in localStorage or backend
-  // const updateActivity = async () => {
-  //   // setLastActivity(Date.now());
-  //   try {
-  //     await fetchJSON<SessionData>(sessionApiRoute, {
-  //       method: "POST",
-  //       body: JSON.stringify({ lastActivity: Date.now() }), // Send new lastActivity to the backend if needed
-  //     });
-  //   } catch (error) {
-  //     toast(`Error updating session activity: ${error}`);
-  //   }
-  // };
 
   // Handle login
   const clientLoginSession = async (username: string) => {

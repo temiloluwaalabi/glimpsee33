@@ -166,6 +166,8 @@ export const authService = {
       body: credentials,
     });
 
+    console.log("RESULT", result);
+
     if (result instanceof ApiError) {
       return ApiError.markAsError(result);
     }

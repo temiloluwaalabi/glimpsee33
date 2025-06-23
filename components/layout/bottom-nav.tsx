@@ -7,6 +7,7 @@ import React from "react";
 
 import { allRoutes } from "@/config/constants/routes";
 import { cn } from "@/lib/utils";
+import { useAppStore } from "@/store/use-app-store";
 
 import { LogoutModal } from "../dialogs/logout-modal";
 import { Button } from "../ui/button";
@@ -48,6 +49,7 @@ export default function MobileBottomNavigation({
   onTabChange,
   className,
 }: MobileBottomNavigationProps) {
+  const { isAuthenticated } = useAppStore();
   const pathname = usePathname();
   const handleTabClick = (tabId: string) => {
     onTabChange?.(tabId);
@@ -112,17 +114,19 @@ export default function MobileBottomNavigation({
             </button>
           );
         })}
-        <LogoutModal
-          trigger={
-            <Button
-              variant={"ghost"}
-              className="relative flex max-w-[80px] min-w-0 flex-1 cursor-pointer flex-col items-center justify-center rounded-lg border-red-900 p-3 pt-4 text-red-900 transition-all duration-200 hover:bg-red-600 hover:px-2 hover:text-white"
-            >
-              <LogOutIcon className="mr-2 size-4" />
-              Logout
-            </Button>
-          }
-        />
+        {isAuthenticated && (
+          <LogoutModal
+            trigger={
+              <Button
+                variant={"ghost"}
+                className="relative flex max-w-[80px] min-w-0 flex-1 cursor-pointer flex-col items-center justify-center rounded-lg border-red-900 p-3 pt-4 text-red-900 transition-all duration-200 hover:bg-red-600 hover:px-2 hover:text-white"
+              >
+                <LogOutIcon className="mr-2 size-4" />
+                Logout
+              </Button>
+            }
+          />
+        )}
       </div>
     </nav>
   );

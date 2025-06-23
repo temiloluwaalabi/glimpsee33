@@ -98,7 +98,7 @@ const ProfilePage = (props: Props) => {
                     {props.user.name}
                   </h1>
                   <p className="mb-2 text-lg text-gray-600">{props.user.bio}</p>
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
                     <span className="flex items-center gap-1">
                       <Mail className="h-4 w-4" />
                       {props.user.email}
@@ -149,7 +149,7 @@ const ProfilePage = (props: Props) => {
 
         {/* Tabs Navigation */}
         <div className="mb-8 rounded-lg bg-white shadow-sm">
-          <div className="flex border-b border-gray-200">
+          <div className="flex flex-wrap border-b border-gray-200">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -179,7 +179,7 @@ const ProfilePage = (props: Props) => {
               <div className="space-y-6">
                 {feedsByUser[0] && (
                   <article className="rounded-lg border border-gray-200 p-6 transition-shadow hover:shadow-md">
-                    <div className="flex gap-4">
+                    <div className="flex flex-col gap-4 md:flex-row">
                       <Image
                         src={feedsByUser[0]?.thumbnail}
                         alt={feedsByUser[0]?.title}

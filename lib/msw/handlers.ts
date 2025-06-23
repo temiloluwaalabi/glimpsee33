@@ -1,8 +1,8 @@
 import { delay, http, HttpResponse } from "msw";
 
-import { findUserByEmail, validatePassword } from "@/app/actions/users.action";
 import {
   allMockFeedItems,
+  mockAuthors,
   mockCategories,
   mockCurrentUser,
 } from "@/config/constants/mockdata";
@@ -277,43 +277,44 @@ export const handlers = [
     }
   ),
   // Login
-  http.post("/api/auth/login", async ({ request }) => {
-    await delay(800); // Simulate network delay
+  // http.post("/api/auth/login", async ({ request }) => {
+  //   await delay(800); // Simulate network delay
 
-    const { email, password } = (await request.json()) as {
-      email: string;
-      password: string;
-    };
+  //   const { email, password } = (await request.json()) as {
+  //     email: string;
+  //     password: string;
+  //   };
 
-    if (!email || !password) {
-      return HttpResponse.json(
-        { error: "Email and password are required" },
-        { status: 400 }
-      );
-    }
+  //   if (!email || !password) {
+  //     return HttpResponse.json(
+  //       { error: "Email and password are required" },
+  //       { status: 400 }
+  //     );
+  //   }
 
-    const user = findUserByEmail(email);
-    if (!user || !validatePassword(password, user.password ?? "")) {
-      return HttpResponse.json(
-        { error: "Invalid email or password" },
-        { status: 401 }
-      );
-    }
+  //   const user = mockAuthors.find((author) => author.email === email);
+  //   if (!user || mockCurrentUser.password !== password) {
+  //     return HttpResponse.json(
+  //       { error: "Invalid email or password" },
+  //       { status: 401 }
+  //     );
+  //   }
 
-    const userData: Partial<User> = {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      avatar: user.avatar,
-      role: user.role,
-    };
+  //   const userData: Partial<User> = {
+  //     id: user.id,
+  //     email: user.email,
+  //     name: user.name,
+  //     avatar: user.avatar,
+  //     role: user.role,
+  //   };
+  //   await loginSession(user.email);
 
-    return HttpResponse.json({
-      success: true,
-      user: userData,
-      message: "Login successful",
-    });
-  }),
+  //   return HttpResponse.json({
+  //     success: true,
+  //     user: userData,
+  //     message: "Login successful",
+  //   });
+  // }),
   // Logout
   http.post("/api/auth/logout", async () => {
     await delay(300);
@@ -354,7 +355,8 @@ export const handlers = [
       );
     }
 
-    const existingUser = findUserByEmail(email);
+    const existingUser = mockAuthors.find((author) => author.email === email);
+
     if (existingUser) {
       return HttpResponse.json(
         { error: "Email already registered" },
