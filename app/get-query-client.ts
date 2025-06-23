@@ -1,9 +1,10 @@
-import { UnauthorizedError } from "@/lib/error";
 import {
   QueryClient,
   defaultShouldDehydrateQuery,
   isServer,
 } from "@tanstack/react-query";
+
+import { UnauthorizedError } from "@/lib/error";
 
 function makeQueryClient() {
   return new QueryClient({
