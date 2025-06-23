@@ -1,7 +1,8 @@
-import { Category, FeedItem } from "@/types";
+import { Category, FeedItem, User } from "@/types";
 
 import { ApiError } from "./api-client";
 import { makeApiRequest } from "./api-request-setup";
+import { LoginSchemaType, RegisterSchemaType } from "../validations";
 
 export interface FeedQuery {
   page: number;
@@ -17,8 +18,15 @@ export interface FeedQuery {
   sortBy: "newest" | "oldest" | "popular" | "trending";
 }
 
+export interface UserQuery {
+  search?: string;
+  role?: "user" | "admin" | "moderator";
+  page?: number;
+  limit?: number;
+  sortBy?: "newest" | "oldest" | "popular" | "trending";
+}
 export interface URLStateConfig extends Partial<FeedQuery> {
-  [key: string]: string | number | boolean | undefined;
+  [key: string]: string | number | boolean | undefined | null | Date;
 }
 
 export interface SearchFilters {
@@ -58,6 +66,7 @@ export const feedService = {
       ...(options?.searchKey ? { [options.searchKey]: query.search } : {}),
     };
 
+    console.log("FEED SERVE query", query);
     const result = await makeApiRequest<{
       items: FeedItem[];
       pagination: {
@@ -79,6 +88,7 @@ export const feedService = {
   },
 
   getFeedItem: async (id: string) => {
+    console.log("ID", id);
     const result = await makeApiRequest<FeedItem>(`/feed/${id}`, "GET");
 
     if (result instanceof ApiError) {
@@ -115,8 +125,122 @@ export const feedService = {
 };
 
 export const categoryService = {
-  getCategories: async () => {
-    const result = await makeApiRequest<Category[]>("/categories", "GET", {});
+  getCategories: async (
+    query: Partial<FeedQuery> = {},
+    options?: { searchKey?: string }
+  ) => {
+    const params = {
+      ...query,
+      ...(options?.searchKey ? { [options.searchKey]: query.search } : {}),
+    };
+
+    const result = await makeApiRequest<Category[]>("/categories", "GET", {
+      params,
+    });
+
+    if (result instanceof ApiError) {
+      return ApiError.markAsError(result);
+    }
+
+    return result;
+  },
+  getCategoryItem: async (id: string) => {
+    console.log("ID", id);
+    const result = await makeApiRequest<FeedItem>(`/categories/${id}`, "GET");
+
+    if (result instanceof ApiError) {
+      return ApiError.markAsError(result);
+    }
+
+    return result;
+  },
+};
+
+export interface AuthResponse {
+  success: boolean;
+  user?: Partial<User>;
+  message?: string;
+  error?: string;
+}
+
+export const authService = {
+  login: async (credentials: LoginSchemaType) => {
+    const result = await makeApiRequest<AuthResponse>("/auth/login", "POST", {
+      body: credentials,
+    });
+
+    if (result instanceof ApiError) {
+      return ApiError.markAsError(result);
+    }
+
+    return result;
+  },
+  register: async (credentials: RegisterSchemaType) => {
+    const result = await makeApiRequest<AuthResponse>(
+      "/auth/register",
+      "POST",
+      {
+        body: credentials,
+      }
+    );
+
+    if (result instanceof ApiError) {
+      return ApiError.markAsError(result);
+    }
+
+    return result;
+  },
+  logout: async () => {
+    const result = await makeApiRequest<AuthResponse>("/auth/logout", "POST");
+
+    if (result instanceof ApiError) {
+      return ApiError.markAsError(result);
+    }
+
+    return result;
+  },
+
+  getCurrentUser: async () => {
+    const result = await makeApiRequest<FeedItem>(`/auth/me`, "GET");
+
+    if (result instanceof ApiError) {
+      return ApiError.markAsError(result);
+    }
+
+    return result;
+  },
+  checkAuth: async (): Promise<boolean> => {
+    try {
+      await authService.getCurrentUser();
+      return true;
+    } catch {
+      return false;
+    }
+  },
+  getUsers: async (
+    query: Partial<UserQuery> = {},
+    options?: { searchKey?: string }
+  ) => {
+    const params = {
+      ...query,
+      ...(options?.searchKey ? { [options.searchKey]: query.search } : {}),
+    };
+
+    const result = await makeApiRequest<{
+      data: User[];
+      pagination: {
+        page: number;
+        limit: number;
+        total: number;
+        totalPages: number;
+        hasNext: boolean;
+        hasPrev: boolean;
+      };
+      message: string;
+      success: boolean;
+    }>("/users", "GET", {
+      params,
+    });
 
     if (result instanceof ApiError) {
       return ApiError.markAsError(result);

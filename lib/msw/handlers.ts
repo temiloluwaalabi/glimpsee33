@@ -1,10 +1,12 @@
 import { delay, http, HttpResponse } from "msw";
 
+import { findUserByEmail, validatePassword } from "@/app/actions/users.action";
 import {
   allMockFeedItems,
   mockCategories,
   mockCurrentUser,
 } from "@/config/constants/mockdata";
+import { User } from "@/types";
 
 export const handlers = [
   http.get(`${process.env.NEXT_PUBLIC_API_URL}/feed`, async ({ request }) => {
@@ -170,7 +172,7 @@ export const handlers = [
       return HttpResponse.json({
         data: { isLiked: item.isLiked, likes: item.likes },
         status: true,
-        message: "All feeds fetched successfully",
+        message: "Feed liked successfully",
       });
     }
   ),
@@ -196,24 +198,14 @@ export const handlers = [
       return HttpResponse.json({
         data: { isBookmarked: item.isBookmarked },
         status: true,
-        message: "All feeds fetched successfully",
+        message: "Feed saved successfully",
       });
     }
   ),
-  // GET USER PROFILE
-  http.get(`${process.env.NEXT_PUBLIC_API_URL}/user/profile`, async () => {
-    await delay(600);
-
-    return HttpResponse.json({
-      data: mockCurrentUser,
-      status: true,
-      message: "User fetched successfully",
-    });
-  }),
 
   // GET USER"S SAVED ITEMS
   http.get(
-    `${process.env.NEXT_PUBLIC_API_URL}/user/saved`,
+    `${process.env.NEXT_PUBLIC_API_URL}/auth/me/bookmarks`,
     async ({ request }) => {
       await delay(600);
 
@@ -285,4 +277,107 @@ export const handlers = [
       });
     }
   ),
+  // Login
+  http.post("/api/auth/login", async ({ request }) => {
+    await delay(800); // Simulate network delay
+
+    const { email, password } = (await request.json()) as {
+      email: string;
+      password: string;
+    };
+
+    if (!email || !password) {
+      return HttpResponse.json(
+        { error: "Email and password are required" },
+        { status: 400 }
+      );
+    }
+
+    const user = findUserByEmail(email);
+    if (!user || !validatePassword(password, user.password ?? "")) {
+      return HttpResponse.json(
+        { error: "Invalid email or password" },
+        { status: 401 }
+      );
+    }
+
+    const userData: Partial<User> = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      avatar: user.avatar,
+      role: user.role,
+    };
+
+    return HttpResponse.json({
+      success: true,
+      user: userData,
+      message: "Login successful",
+    });
+  }),
+  // Logout
+  http.post("/api/auth/logout", async () => {
+    await delay(300);
+
+    return HttpResponse.json({
+      success: true,
+      message: "Logout successful",
+    });
+  }),
+
+  // Get current user
+  http.get("/api/auth/me", async () => {
+    await delay(400);
+
+    // In MSW, we can't access real sessions, so we'll simulate
+    // For demo purposes, return the first user
+    const user = mockCurrentUser;
+
+    return HttpResponse.json({
+      success: true,
+      user,
+    });
+  }),
+
+  http.post("/api/auth/register", async ({ request }) => {
+    await delay(800);
+
+    const { email, password, name } = (await request.json()) as {
+      email: string;
+      password: string;
+      name: string;
+    };
+
+    if (!email || !password || !name) {
+      return HttpResponse.json(
+        { error: "Name, email, and password are required" },
+        { status: 400 }
+      );
+    }
+
+    const existingUser = findUserByEmail(email);
+    if (existingUser) {
+      return HttpResponse.json(
+        { error: "Email already registered" },
+        { status: 409 }
+      );
+    }
+
+    // Simulate user creation
+    const newUser: Partial<User> = {
+      id: Date.now().toString(),
+      email,
+      name,
+      avatar: "",
+      role: "user",
+    };
+
+    // In a real app, you'd save the user here
+
+    return HttpResponse.json({
+      success: true,
+      user: newUser,
+      message: "Registration successful",
+    });
+  }),
 ];

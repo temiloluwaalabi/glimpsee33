@@ -4,7 +4,9 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-
+export function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 export const getRandomImage = (
   width: number = 800,
   height: number = 600,
@@ -63,3 +65,80 @@ export const getTimestamp = (createdAt: Date): string => {
     return `${years} ${years === 1 ? "year" : "years"} ago`;
   }
 };
+
+/**
+ * Enhanced formUrlQuery function with better type handling
+ */
+// export const formUrlQuery = ({
+//   params,
+//   updates,
+//   options = {},
+// }: UrlQueryParams): string => {
+//   const { skipNull = true, skipEmptyString = true } = options;
+
+//   // Parse current params
+//   const currentUrl = { ...qs.parse(params) };
+
+//   // Process updates
+//   Object.entries(updates).forEach(([key, value]) => {
+//     if (
+//       (skipNull && (value === null || value === undefined)) ||
+//       (skipEmptyString && value === "")
+//     ) {
+//       delete currentUrl[key];
+//     } else if (value instanceof Date) {
+//       currentUrl[key] = value.toISOString();
+//     } else if (typeof value === "boolean") {
+//       currentUrl[key] = value.toString();
+//     } else if (Array.isArray(value)) {
+//       if (value.length === 0 && skipEmptyString) {
+//         delete currentUrl[key];
+//       } else {
+//         currentUrl[key] = value.join(",");
+//       }
+//     } else if (value !== undefined && value !== null) {
+//       currentUrl[key] = value.toString();
+//     }
+//   });
+
+//   return qs.stringifyUrl(
+//     {
+//       url: typeof window !== "undefined" ? window.location.pathname : "",
+//       query: currentUrl,
+//     },
+//     {
+//       skipNull,
+//       skipEmptyString,
+//     }
+//   );
+// };
+
+// export const removeKeysFromQuery = ({
+//   params,
+//   keysToRemove,
+// }: RemoveUrlQueryParams) => {
+//   const currentUrl = { ...qs.parse(params) }; // Clone to avoid direct mutation
+
+//   keysToRemove.forEach((key) => {
+//     delete currentUrl[key];
+//   });
+
+//   return qs.stringifyUrl(
+//     {
+//       url: window.location.pathname,
+//       query: currentUrl,
+//     },
+//     {
+//       skipNull: true,
+//       skipEmptyString: true,
+//     }
+//   );
+// };
+
+/**
+ * Fetches a specific query parameter from the URL.
+ */
+// export const getQueryParam = (params: string, key: string) => {
+//   const currentUrl = qs.parse(params);
+//   return currentUrl[key] || null;
+// };

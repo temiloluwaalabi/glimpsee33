@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 export default function FilterPills() {
   const { filters, setSelectedCategory } = useFeedState();
   return (
-    <div className="mb-6 flex flex-wrap gap-2">
+    <div className="mt-2 mb-6 flex flex-wrap gap-2 bg-transparent pl-2 shadow-none">
       {mockCategories.map((category) => {
         const Icon = category.icon;
         const isActive = filters.category === category.id;
@@ -18,9 +18,9 @@ export default function FilterPills() {
             key={category.id}
             onClick={() => setSelectedCategory(category.id)}
             className={cn(
-              "group flex items-center gap-2 overflow-hidden rounded-full px-4 py-2 text-sm font-medium transition-all duration-300",
+              "group flex h-10 cursor-pointer items-center gap-2 overflow-hidden rounded-md px-4 py-2 text-sm font-medium shadow-none transition-all duration-300",
               isActive
-                ? "scale-105 transform text-white shadow-lg"
+                ? "scale-105 transform border border-blue-600 bg-blue-200 text-blue-600 shadow-lg"
                 : "border border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50"
             )}
             whileHover={{ scale: 1.05 }}

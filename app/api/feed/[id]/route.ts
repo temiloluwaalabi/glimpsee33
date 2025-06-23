@@ -2,16 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { allMockFeedItems } from "@/config/constants/mockdata";
 
-interface RouteContext {
-  params: {
-    id: string;
-  };
-}
-
-export async function GET(request: NextRequest, { params }: RouteContext) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const feedItem = allMockFeedItems.find((item) => item.id === params.id);
+    const id = (await params).id;
 
+    const feedItem = allMockFeedItems.find((item) => item.id === id);
+
+    console.log("FEED ITEM", feedItem);
     if (!feedItem) {
       return NextResponse.json(
         { message: "Feed item not found" },

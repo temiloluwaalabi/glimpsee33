@@ -10,6 +10,6 @@ npm run format || { echo "❌ Formatting failed! Fix the errors before committin
 
 # Run Unit Tests (if Jest is set up)
 echo "🧪 Running tests..."
-npm run test:unit || { echo "❌ Tests failed! Fix them before committing."; exit 1; }
+npm run test || { echo "❌ Tests failed! Fix them before committing."; exit 1; }
 
 echo "✅ All pre-commit checks passed! Proceeding with commit..."

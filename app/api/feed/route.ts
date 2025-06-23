@@ -1,28 +1,51 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { allMockFeedItems } from "@/config/constants/mockdata";
+import { allMockFeedItems, mockCategories } from "@/config/constants/mockdata";
 import { FeedQuery } from "@/lib/api/api";
 import { FeedItem, PaginatedResponse } from "@/types";
 
 export async function GET(request: NextRequest) {
   try {
+    console.log("API ROUTE USED");
     const { searchParams } = new URL(request.url);
 
-    const query: FeedQuery = {
+    const query: Partial<FeedQuery> = {
       page: parseInt(searchParams.get("page") || "1"),
       limit: parseInt(searchParams.get("limit") || "10"),
-      category: searchParams.get("category") || undefined,
-      featured: searchParams.get("featured") === "true" || undefined,
-      search: searchParams.get("search") || undefined,
-      authorId: searchParams.get("authorId") || undefined,
+      category: searchParams.get("category") || "",
+      featured: searchParams.get("featured") === "true" || false,
+      search: searchParams.get("search") || "",
+      authorId: searchParams.get("authorId") || "",
+      sortBy: ((): "newest" | "oldest" | "popular" | "trending" => {
+        const sort = searchParams.get("sort");
+        if (
+          sort === "newest" ||
+          sort === "oldest" ||
+          sort === "popular" ||
+          sort === "trending"
+        ) {
+          return sort;
+        }
+        return "newest";
+      })(),
     };
 
     let filteredItems = [...allMockFeedItems];
     // Apply filters
     if (query.category) {
-      filteredItems = filteredItems.filter(
-        (item) => item.category === query.category
+      // Find the category by id from mockCategories
+      const categoryObj = mockCategories.find(
+        (cat) => cat.id === query.category
       );
+      if (categoryObj) {
+        filteredItems = filteredItems.filter(
+          (item) =>
+            item.category.toLowerCase() === categoryObj.name.toLowerCase()
+        );
+      } else {
+        // If category id not found, return empty
+        filteredItems = [];
+      }
     }
 
     if (query.featured) {
@@ -35,7 +58,8 @@ export async function GET(request: NextRequest) {
         (item) =>
           item.title.toLowerCase().includes(searchLower) ||
           item.description.toLowerCase().includes(searchLower) ||
-          item.tags.some((tag) => tag.toLowerCase().includes(searchLower))
+          item.tags.some((tag) => tag.toLowerCase().includes(searchLower)) ||
+          item.author.name.toLowerCase().includes(searchLower)
       );
     }
 
@@ -45,11 +69,27 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Sort by publishedAt (newest first)
-    filteredItems.sort(
-      (a, b) =>
-        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-    );
+    // sort by date (newest first)
+    filteredItems.sort((a, b) => {
+      switch (query.sortBy) {
+        case "newest":
+          return (
+            new Date(b.publishedAt).getTime() -
+            new Date(a.publishedAt).getTime()
+          );
+        case "oldest":
+          return (
+            new Date(a.publishedAt).getTime() -
+            new Date(b.publishedAt).getTime()
+          );
+        case "popular":
+          return b.likes - a.likes;
+        case "trending":
+          return b.likes + b.comments - (a.likes + a.comments);
+        default:
+          return 0;
+      }
+    });
 
     // Pagination
     const page = query.page || 1;
@@ -60,22 +100,21 @@ export async function GET(request: NextRequest) {
     const paginatedItems = filteredItems.slice(startIndex, endIndex);
 
     const response: PaginatedResponse<FeedItem> = {
-      data: {
-        items: paginatedItems,
-        pagination: {
-          page,
-          limit,
-          total: filteredItems.length,
-          totalPages: Math.ceil(filteredItems.length / limit),
-          hasNext: endIndex < filteredItems.length,
-          hasPrev: startIndex > 0,
-        },
+      data: paginatedItems,
+      pagination: {
+        page,
+        limit,
+        total: filteredItems.length,
+        totalPages: Math.ceil(filteredItems.length / limit),
+        hasNext: endIndex < filteredItems.length,
+        hasPrev: startIndex > 0,
       },
       message: "Feed fetched successfully",
       success: true,
       timestamp: new Date().toISOString(),
     };
 
+    // console.log("RESPONSE", response);
     return NextResponse.json(response, {
       status: 200,
     });

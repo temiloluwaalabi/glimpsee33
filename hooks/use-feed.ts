@@ -10,6 +10,7 @@ import { categoryService, FeedQuery, feedService } from "@/lib/api/api";
 import { ApiError } from "@/lib/api/api-client";
 import logger, { log } from "@/lib/logger";
 import { handleMutationError } from "@/lib/query/handle-mutation-error";
+import { useAppStore } from "@/store/use-app-store";
 import { FeedItem, SearchFilters } from "@/types";
 
 export const feedKeys = {
@@ -47,25 +48,26 @@ export const useInfiniteFeedItems = (
   return useInfiniteQuery({
     queryKey: feedKeys.list(query),
     queryFn: async ({ pageParam = 1 }) => {
+      log.debug("Fetching feed page", { pageParam, query });
       const result = await feedService.getFeedItems({
         ...query,
         page: pageParam,
       });
 
-      log.debug("Fetching feed page", { pageParam, query });
       if (ApiError.isApiError(result)) {
-        console.log("Error detected in query, throwing", result);
+        logger.error("Error detected in infinite query", result);
         throw result;
       }
 
       return result;
     },
-    getNextPageParam: (lastPage: {
-      data?: { pagination?: { hasMore: boolean; page: number } };
-    }) =>
-      lastPage.data?.pagination?.hasMore
-        ? lastPage.data.pagination.page + 1
-        : undefined,
+    getNextPageParam: (lastPage) => {
+      const pagination = lastPage?.rawResponse?.pagination;
+      if (pagination?.hasNext) {
+        return pagination.page + 1;
+      }
+      return undefined;
+    },
     initialPageParam: 1,
     staleTime: 2 * 60 * 1000, // 2 minutes
     gcTime: 5 * 60 * 1000, // 5 minutes
@@ -223,3 +225,162 @@ export function useInvalidatedFeeds() {
       queryClient.invalidateQueries({ queryKey: feedKeys.categories }),
   };
 }
+
+export const useGetBookmarkedFeeds = (enabled: true) => {
+  const { getBookmarkIds } = useAppStore();
+  console.log("BOOKMARK IDS", getBookmarkIds());
+
+  return useQuery({
+    queryKey: ["bookmarked-feeds", getBookmarkIds()],
+    queryFn: async () => {
+      const bookmarkIds = getBookmarkIds();
+
+      if (bookmarkIds.length === 0) {
+        return [];
+      }
+
+      // Fetch all feeds from the server
+      const serverBookmarked = await feedService.getFeedItems();
+      if (ApiError.isApiError(serverBookmarked)) {
+        console.log(
+          "Error fetching server bookmarked feeds:",
+          serverBookmarked
+        );
+        throw serverBookmarked;
+      }
+      const bookmarkedD = serverBookmarked.data as FeedItem[];
+      // Only include feeds that are both bookmarked on the server and still in local bookmarks
+      const data = bookmarkedD.filter(
+        (mark) => mark.isBookmarked === true && bookmarkIds.includes(mark.id)
+      );
+
+      // Get feeds for local bookmark IDs that might not be on server yet
+      const localBookmarkIds = bookmarkIds.filter(
+        (id) => !data.some((feed) => feed.id === id)
+      );
+
+      let localBookmarkedFeeds: FeedItem[] = [];
+
+      if (localBookmarkIds.length > 0) {
+        // Fetch individual feeds for local bookmarks
+        const localFeedPromises = localBookmarkIds.map(async (id) => {
+          try {
+            const feed = await feedService.getFeedItem(id);
+            const mainFeed = feed.data as FeedItem;
+
+            if (!ApiError.isApiError(feed)) {
+              return { ...mainFeed, isBookmarked: true }; // Mark as bookmarked locally
+            }
+            return null;
+          } catch (error) {
+            console.warn(`Failed to fetch bookmarked feed ${id}:`, error);
+            return null;
+          }
+        });
+
+        const localFeeds = await Promise.all(localFeedPromises);
+        localBookmarkedFeeds = localFeeds.filter(Boolean) as FeedItem[];
+      }
+
+      // Combine server bookmarked and local bookmarked feeds
+      const allBookmarkedFeeds = [...data, ...localBookmarkedFeeds];
+
+      // Remove duplicates and sort by most recent
+      const uniqueFeeds = allBookmarkedFeeds.reduce((acc, feed) => {
+        if (
+          !acc.some((existing) => existing.id === feed.id) &&
+          bookmarkIds.includes(feed.id) // Only include if still bookmarked locally
+        ) {
+          acc.push(feed);
+        }
+        return acc;
+      }, [] as FeedItem[]);
+
+      return uniqueFeeds.sort(
+        (a, b) =>
+          new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+      );
+    },
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    enabled,
+    // Refetch when bookmarks change
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
+};
+export const useGetFavoritedFeeds = (enabled: true) => {
+  const { getFavoriteIds } = useAppStore();
+
+  return useQuery({
+    queryKey: ["favorited-feeds", getFavoriteIds()],
+    queryFn: async () => {
+      const favoriteIds = getFavoriteIds();
+
+      if (favoriteIds.length === 0) {
+        return [];
+      }
+
+      // Fetch all feeds from the server
+      const serverFavorited = await feedService.getFeedItems();
+      if (ApiError.isApiError(serverFavorited)) {
+        console.log("Error fetching server favorited feeds:", serverFavorited);
+        throw serverFavorited;
+      }
+      const favoredData = serverFavorited.data as FeedItem[];
+      // Only include feeds that are both liked on the server and still in local favorites
+      const data = favoredData.filter(
+        (mark) => mark.isLiked === true && favoriteIds.includes(mark.id)
+      );
+
+      // Get feeds for local favorite IDs that might not be on server yet
+      const localFavoriteIds = favoriteIds.filter(
+        (id) => !data.some((feed) => feed.id === id)
+      );
+
+      let localFavoritedFeeds: FeedItem[] = [];
+
+      if (localFavoriteIds.length > 0) {
+        // Fetch individual feeds for local favorites
+        const localFeedPromises = localFavoriteIds.map(async (id) => {
+          try {
+            const feed = await feedService.getFeedItem(id);
+            const mainFeed = feed.data as FeedItem;
+            if (!ApiError.isApiError(feed)) {
+              return { ...mainFeed, isLiked: true }; // Mark as liked locally
+            }
+            return null;
+          } catch (error) {
+            console.warn(`Failed to fetch favorited feed ${id}:`, error);
+            return null;
+          }
+        });
+
+        const localFeeds = await Promise.all(localFeedPromises);
+        localFavoritedFeeds = localFeeds.filter(Boolean) as FeedItem[];
+      }
+
+      // Combine server favorited and local favorited feeds
+      const allFavoritedFeeds = [...data, ...localFavoritedFeeds];
+
+      // Remove duplicates and only include feeds that are still in local favorites
+      const uniqueFeeds = allFavoritedFeeds.reduce((acc, feed) => {
+        if (
+          !acc.some((existing) => existing.id === feed.id) &&
+          favoriteIds.includes(feed.id)
+        ) {
+          acc.push(feed);
+        }
+        return acc;
+      }, [] as FeedItem[]);
+
+      return uniqueFeeds.sort(
+        (a, b) =>
+          new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+      );
+    },
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    enabled,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
+};

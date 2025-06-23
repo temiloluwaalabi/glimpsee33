@@ -32,20 +32,21 @@ export const useFeedState = () => {
   });
 
   // Initialize store from URL on first load
-
   useEffect(() => {
     if (!isInitialized.current) {
+      // Fixed: swap search and globalSearch mapping
       const urlParams: Record<string, string> = {
-        search: feedState.search ?? "",
-        globalSearch: feedState.gSearch ?? "",
+        search: feedState.search ?? "", // This is the local search
+        globalSearch: feedState.gSearch ?? "", // This is the global search (g param)
         sortBy: ["newest", "oldest", "popular", "trending"].includes(
           feedState.sortBy
         )
           ? feedState.sortBy
           : "newest",
         viewMode: feedState.viewMode ?? "grid",
-        page: String(feedState.page ?? "1"),
+        page: String(feedState.page ?? 1),
         category: feedState.category ?? "all",
+        featured: String(feedState.featured ?? false), // Convert boolean to string
       };
 
       store.syncFromURL(urlParams);
@@ -60,13 +61,13 @@ export const useFeedState = () => {
     feedState.search,
     feedState.sortBy,
     feedState.viewMode,
+    feedState.featured, // Added missing dependency
     store,
     storeStateKey,
     urlStateKey,
   ]);
 
   // Sync URL changes to store (when user navigates with browser back/forward)
-
   useEffect(() => {
     if (!isInitialized.current) return;
 
@@ -74,9 +75,10 @@ export const useFeedState = () => {
       urlStateKey !== lastURLUpdate.current &&
       urlStateKey !== lastStoreUpdate.current
     ) {
+      // Fixed: correct the mapping between URL and store
       store.updateFilters({
-        search: feedState.gSearch,
-        globalSearch: feedState.search,
+        search: feedState.search, // Local search
+        globalSearch: feedState.gSearch, // Global search
         category: feedState.category,
         sortBy: ["newest", "oldest", "popular", "trending"].includes(
           feedState.sortBy
@@ -85,20 +87,23 @@ export const useFeedState = () => {
           : "newest",
         viewMode: feedState.viewMode,
         page: feedState.page,
+        featured: feedState.featured, // Added missing featured
       });
 
       lastURLUpdate.current = urlStateKey;
+      // Fixed: create correct store state for comparison
       lastStoreUpdate.current = JSON.stringify({
-        search: feedState.gSearch,
-        globalSearch: feedState.search,
+        search: feedState.search,
+        globalSearch: feedState.gSearch,
         category: feedState.category,
         sortBy: ["newest", "oldest", "popular", "trending"].includes(
           feedState.sortBy
         )
-          ? (feedState.sortBy as "newest" | "oldest" | "popular" | "trending")
+          ? feedState.sortBy
           : "newest",
         viewMode: feedState.viewMode,
         page: feedState.page,
+        featured: feedState.featured,
       });
     }
   }, [
@@ -108,12 +113,12 @@ export const useFeedState = () => {
     feedState.search,
     feedState.sortBy,
     feedState.viewMode,
+    feedState.featured, // Added missing dependency
     store,
     urlStateKey,
   ]);
 
   // Sync store changes to URL (when user interacts with filters)
-
   useEffect(() => {
     if (!isInitialized.current) return;
 
@@ -144,10 +149,10 @@ export const useFeedState = () => {
     }
   }, [storeStateKey, store.filters, updateFeedState]);
 
-  //   enahnced actions that update both store and URL
-
+  // Enhanced actions that update both store and URL
   const actions = {
-    setglobalSearchQuery: useCallback(
+    setGlobalSearchQuery: useCallback(
+      // Fixed typo: was "setglobalSearchQuery"
       (query: string) => {
         store.setGlobalSearchQuery(query);
       },
@@ -160,7 +165,7 @@ export const useFeedState = () => {
       [store]
     ),
     setSortBy: useCallback(
-      (sort: string) => {
+      (sort: "newest" | "oldest" | "popular" | "trending") => {
         store.setSortBy(sort);
       },
       [store]
@@ -171,21 +176,18 @@ export const useFeedState = () => {
       },
       [store]
     ),
-
     setViewMode: useCallback(
       (view: "grid" | "list") => {
         store.setViewMode(view);
       },
       [store]
     ),
-
     setPage: useCallback(
       (page: number) => {
         store.setPage(page);
       },
       [store]
     ),
-
     resetFilters: useCallback(() => {
       store.resetFilters();
     }, [store]),
@@ -209,14 +211,14 @@ export const useFeedState = () => {
 };
 
 export const useFeedSearch = () => {
-  const { filters, setLocalSearchQuery, setglobalSearchQuery, cache } =
-    useFeedState();
+  const { filters, setLocalSearchQuery, setGlobalSearchQuery, cache } =
+    useFeedState(); // Fixed typo
 
   return {
     localSearchQuery: filters.search,
     globalSearchQuery: filters.globalSearch,
     setLocalSearchQuery,
-    setglobalSearchQuery,
+    setGlobalSearchQuery, // Fixed typo
     recentSearchs: cache.recentSearches,
     clearRecentSearches: useAppStore((state) => state.clearRecentSearches),
   };

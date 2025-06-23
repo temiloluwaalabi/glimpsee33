@@ -24,7 +24,7 @@ const eslintConfig = [
   {
     rules: {
       camelcase: "off",
-      // "no-undef": "off",
+      "no-undef": "off",
       // TanStack Query rules
       // "@tanstack/query/exhaustive-deps": "error",
       // "@tanstack/query/no-rest-destructuring": "warn",

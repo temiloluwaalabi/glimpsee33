@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { FeedQuery } from "@/lib/api/api";
+import { FeedQuery, URLStateConfig } from "@/lib/api/api";
 
 export interface Category {
   id: string;
@@ -63,6 +63,7 @@ export interface User {
   name: string;
   email: string;
   avatar: string;
+  password?: string;
   bio?: string;
   role: "user" | "admin" | "moderator";
   createdAt: string;
@@ -78,20 +79,18 @@ export interface ApiResponse<T> {
 }
 
 export interface PaginatedResponse<T> {
-  data: {
-    items: T[];
-    pagination: {
-      page: number;
-      limit: number;
-      total: number;
-      totalPages: number;
-      hasNext: boolean;
-      hasPrev: boolean;
-    };
+  data: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
   };
   message: string;
   success: boolean;
-  timestamp: string;
+  timestamp?: string;
 }
 
 export interface SearchFilters {
@@ -140,7 +139,7 @@ export interface LoadingState {
 export interface AppState {
   // FEED STATE
   filters: FeedQuery;
-  user: User | null;
+  user: Partial<User> | null;
   isAuthenticated: boolean;
   preference: UserPreferences;
   toasts: Toast[];
@@ -169,31 +168,31 @@ export interface FormState<T> {
   isSubmitting: boolean;
 }
 
-// Analytics types
-export interface AnalyticsEvent {
-  name: string;
-  properties: Record<string, any>;
-  timestamp: string;
-  userId?: string;
-  sessionId: string;
-}
+// // Analytics types
+// export interface AnalyticsEvent {
+//   name: string;
+//   properties: Record<string, any>;
+//   timestamp: string;
+//   userId?: string;
+//   sessionId: string;
+// }
 
-export interface MetricData {
-  views: number;
-  likes: number;
-  shares: number;
-  comments: number;
-  readTime: number;
-  bounceRate: number;
-}
+// export interface MetricData {
+//   views: number;
+//   likes: number;
+//   shares: number;
+//   comments: number;
+//   readTime: number;
+//   bounceRate: number;
+// }
 
-// Feature flags
-export interface FeatureFlag {
-  key: string;
-  enabled: boolean;
-  description: string;
-  rolloutPercentage: number;
-}
+// // Feature flags
+// export interface FeatureFlag {
+//   key: string;
+//   enabled: boolean;
+//   description: string;
+//   rolloutPercentage: number;
+// }
 
 // SEO Meta types
 export interface SEOMeta {
@@ -205,4 +204,19 @@ export interface SEOMeta {
   twitterCard: string;
   canonical: string;
   robots: string;
+}
+
+export interface UrlQueryParams {
+  params: string;
+  updates: Partial<URLStateConfig>;
+  options?: {
+    replace?: boolean;
+    scroll?: boolean;
+    skipNull?: boolean;
+    skipEmptyString?: boolean;
+  };
+}
+export interface RemoveUrlQueryParams {
+  params: string;
+  keysToRemove: string[];
 }

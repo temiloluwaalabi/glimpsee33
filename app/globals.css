@@ -1,13 +1,15 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-mitr: var(--font-mitr);
+
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -41,6 +43,12 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  --color-dark-100: var(--dark-100);
+  --color-dark-200: var(--dark-200);
+  --color-dark-300: var(--dark-300);
+  --color-dark-400: var(--dark-400);
+  --color-dark-500: var(--dark-500);
 }
 
 :root {
@@ -76,6 +84,11 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --dark-100: oklch(0% 0 0); /* #000000 */
+  --dark-200: oklch(20.79% 0.036 278.91); /* #0F1117 */
+  --dark-300: oklch(23.7% 0.035 278.53); /* #151821 */
+  --dark-400: oklch(30.77% 0.035 280.04); /* #212734 */
+  --dark-500: oklch(18.64% 0.008 274.12); /* #101012 */
 }
 
 .dark {
@@ -117,6 +130,6 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-mitr dark:bg-dark-300;
   }
 }

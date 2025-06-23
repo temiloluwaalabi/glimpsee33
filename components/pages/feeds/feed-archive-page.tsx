@@ -1,26 +1,29 @@
-// @flow
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@radix-ui/react-select";
-import { Separator } from "@radix-ui/react-separator";
+"use client";
+
+import { Separator } from "@radix-ui/react-select";
 import { AnimatePresence, motion } from "framer-motion";
 import { Filter, Grid, List, Search, TrendingUp, X } from "lucide-react";
 import * as React from "react";
 import { useInView } from "react-intersection-observer";
 
+import { FeedItemCard } from "@/components/cards/feed-item-card";
+import MaxWidthContainer from "@/components/layout/max-width-container";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { sortOptions } from "@/config/constants";
 import { useInfiniteFeedItems } from "@/hooks/use-feed";
 import { useFeedState } from "@/hooks/use-feed-state";
-import { useURLState } from "@/hooks/use-url-state";
+import { FeedItem } from "@/types";
 
 import FilterPills from "./filter-pills";
 
@@ -77,43 +80,48 @@ const FeedItemSkeleton = ({ view = "grid" }: { view: "grid" | "list" }) => {
   );
 };
 
-export const FeedArchivePage = () => {
+export const FeedArchivePage = ({ category }: { category?: string }) => {
   const feedState = useFeedState();
-  const { filters, setSortBy, setViewMode, resetFilters, activeFiltersCount } =
-    feedState;
+  const {
+    filters,
+    setSortBy,
+    setViewMode,
+    resetFilters,
+    activeFiltersCount,
+    setLocalSearchQuery: setLQ, // Use the action from the hook
+  } = feedState;
+
   const [localSearchQuery, setLocalSearchQuery] = React.useState(
     filters.search
   );
   const [showMobileFilters, setShowMobileFilters] = React.useState(false);
 
-  useURLState();
+  // Ref for debounce timeout
+  const debounceTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
 
-  // Debounced search
+  // Debounced search with proper cleanup
+
   React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setLocalSearchQuery(localSearchQuery);
+    // Clear existing timeout
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    // Set new timeout
+    debounceTimeoutRef.current = setTimeout(() => {
+      setLQ(localSearchQuery);
     }, 300);
 
-    return () => clearTimeout(timer);
-  }, [localSearchQuery, setLocalSearchQuery]);
-
-  // sync local search with store when store changes externally
-
-  React.useEffect(() => {
-    setLocalSearchQuery(filters.search);
-  }, [filters.search, setLocalSearchQuery]);
-
-  // // Define the type for the page data returned by useInfiniteFeedItems
-  // type FeedPage = {
-  //   data: {
-  //     pagination?: {
-  //       total?: number;
-  //       [key: string]: any;
-  //     };
-  //     [key: string]: any;
-  //   };
-  //   [key: string]: any;
-  // };
+    // Cleanup function
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [localSearchQuery]);
 
   // Infinite query for feed items
   const {
@@ -125,7 +133,11 @@ export const FeedArchivePage = () => {
     isError,
     error,
     refetch,
-  } = useInfiniteFeedItems();
+  } = useInfiniteFeedItems({
+    category: category ?? (filters.category === "all" ? "" : filters.category),
+    sortBy: filters.sortBy,
+    search: filters.search,
+  });
 
   const { ref: intersectionRef, inView } = useInView({
     threshold: 0.1,
@@ -133,19 +145,45 @@ export const FeedArchivePage = () => {
   });
 
   React.useEffect(() => {
+    if (filters.search === "") {
+      setLocalSearchQuery("");
+    }
+  }, [filters.search]);
+  // Infinite scroll effect with better dependency management
+  React.useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   console.log("DATA", data);
-  // Get all feed items from pages
-  const allItems = data?.pages.flatMap((page) => page.data) ?? [];
-  const totalCount = 10;
+  // Get all feed items from pages with better error handling
+  const allItems = React.useMemo(() => {
+    if (!data?.pages) return [];
+    return data.pages.flatMap((page) => page.data || []);
+  }, [data?.pages]);
 
-  const handleRetry = () => {
+  const totalCount = React.useMemo(() => {
+    return data?.pages?.[0]?.rawResponse?.pagination?.total || 0;
+  }, [data?.pages]);
+
+  const handleRetry = React.useCallback(() => {
     refetch();
-  };
+  }, [refetch]);
+
+  // Clear search handler
+  const handleClearSearch = React.useCallback(() => {
+    setLocalSearchQuery("");
+    setLQ(""); // Also clear the store immediately
+  }, [setLQ]);
+
+  // Handle search input change
+  const handleSearchChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setLocalSearchQuery(e.target.value);
+    },
+    []
+  );
 
   const viewMode = filters.viewMode;
 
@@ -166,12 +204,40 @@ export const FeedArchivePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+    <section className="min-h-screen bg-gradient-to-br">
+      <MaxWidthContainer className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+        <div>
+          <div className="absolute inset-0 bg-black/20" />
+          <div
+            className={`absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http://www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.05%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%221%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20`}
+          />
+
+          <div className="relative z-10 px-4 py-16 text-center text-white">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <h1 className="mb-4 text-5xl font-bold tracking-tight md:text-6xl">
+                Discover Amazing
+                <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                  {" "}
+                  Stories
+                </span>
+              </h1>
+              <p className="mx-auto max-w-2xl text-xl text-blue-100">
+                Explore curated content from the world&apos;s most creative
+                minds and stay ahead of the curve.
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </MaxWidthContainer>
       {/* Enhanced Header */}
-      <div className="sticky top-0 z-50 border-b border-gray-200/50 bg-white/80 shadow-sm backdrop-blur-xl">
-        <div className="container mx-auto px-4 py-6">
+      <MaxWidthContainer className="dark:!bg-gray-90 sticky top-0 z-50 border-b border-gray-200/50 !py-6 backdrop-blur-xl dark:border-gray-700">
+        <div className="container mx-auto">
           {/* Main Search and Controls */}
-          <div className="mb-4 flex flex-col gap-4 lg:flex-row">
+          <div className="flex flex-col gap-4 lg:flex-row">
             {/* Enhanced Search Bar */}
             <div className="group relative flex-1">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
@@ -180,18 +246,17 @@ export const FeedArchivePage = () => {
               <Input
                 placeholder="Discover amazing content..."
                 value={localSearchQuery}
-                onChange={(e) => setLocalSearchQuery(e.target.value)}
-                className="h-12 rounded-xl border-2 border-gray-200 bg-white/50 pr-4 pl-12 text-lg shadow-sm backdrop-blur-sm focus:border-blue-500"
+                onChange={handleSearchChange}
+                className="h-12 rounded-xl border-2 border-gray-200 bg-white/50 pr-4 pl-12 text-lg shadow-none backdrop-blur-sm outline-none focus:border-blue-500"
               />
               {localSearchQuery && (
-                <button
-                  onClick={() => {
-                    setLocalSearchQuery("");
-                  }}
+                <Button
+                  onClick={handleClearSearch}
                   className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600"
+                  aria-label="Clear search"
                 >
                   <X className="h-5 w-5" />
-                </button>
+                </Button>
               )}
             </div>
 
@@ -199,7 +264,7 @@ export const FeedArchivePage = () => {
             <div className="flex items-center gap-3">
               {/* Sort Dropdown */}
               <Select value={filters.sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="h-12 w-44 rounded-xl border-2 border-gray-200 bg-white/50 backdrop-blur-sm">
+                <SelectTrigger className="!h-12 w-44 cursor-pointer rounded-xl border-2 border-gray-200 bg-white/50 backdrop-blur-sm">
                   <div className="flex items-center gap-2">
                     <TrendingUp className="h-4 w-4" />
                     <SelectValue placeholder="Sort by" />
@@ -212,11 +277,11 @@ export const FeedArchivePage = () => {
                       <SelectItem
                         key={option.value}
                         value={option.value}
-                        className="rounded-lg"
+                        className="cursor-pointer rounded-lg"
                       >
                         <div className="flex items-center gap-2">
                           <Icon className="h-4 w-4" />
-                          <div>
+                          <div className="flex flex-col items-start">
                             <div className="font-medium">{option.label}</div>
                             <div className="text-xs text-gray-500">
                               {option.description}
@@ -235,11 +300,12 @@ export const FeedArchivePage = () => {
                   variant={filters.viewMode === "grid" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewMode("grid")}
-                  className={`h-12 rounded-none px-4 ${
+                  className={`!h-12 w-12 cursor-pointer rounded-none px-4 ${
                     filters.viewMode === "grid"
                       ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white"
                       : "hover:bg-gray-100"
                   }`}
+                  aria-label="Grid view"
                 >
                   <Grid className="h-4 w-4" />
                 </Button>
@@ -247,11 +313,12 @@ export const FeedArchivePage = () => {
                   variant={filters.viewMode === "list" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewMode("list")}
-                  className={`h-12 rounded-none px-4 ${
+                  className={`!h-12 w-12 cursor-pointer rounded-none px-4 ${
                     filters.viewMode === "list"
                       ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white"
                       : "hover:bg-gray-100"
                   }`}
+                  aria-label="List view"
                 >
                   <List className="h-4 w-4" />
                 </Button>
@@ -262,6 +329,7 @@ export const FeedArchivePage = () => {
                 variant="outline"
                 onClick={() => setShowMobileFilters(!showMobileFilters)}
                 className="relative h-12 rounded-xl border-2 border-gray-200 bg-white/50 px-4 backdrop-blur-sm lg:hidden"
+                aria-label={`${showMobileFilters ? "Hide" : "Show"} filters`}
               >
                 <Filter className="h-4 w-4" />
                 {activeFiltersCount > 0 && (
@@ -274,9 +342,18 @@ export const FeedArchivePage = () => {
           </div>
 
           {/* Filter Pills */}
-          <div className={`${showMobileFilters ? "block" : "hidden lg:block"}`}>
-            <FilterPills />
-          </div>
+          <AnimatePresence>
+            {(showMobileFilters || window.innerWidth >= 1024) && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden"
+              >
+                <FilterPills />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Active Filters & Stats */}
           <div className="flex items-center justify-between">
@@ -309,10 +386,10 @@ export const FeedArchivePage = () => {
             )}
           </div>
         </div>
-      </div>
+      </MaxWidthContainer>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
+      <MaxWidthContainer className="py-8">
         <AnimatePresence mode="wait">
           {isLoading ? (
             <motion.div
@@ -322,7 +399,7 @@ export const FeedArchivePage = () => {
               exit={{ opacity: 0 }}
               className={
                 viewMode === "grid"
-                  ? "grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                  ? "grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
                   : "space-y-6"
               }
             >
@@ -363,22 +440,25 @@ export const FeedArchivePage = () => {
               exit={{ opacity: 0 }}
               className={
                 viewMode === "grid"
-                  ? "grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-                  : "space-y-6"
+                  ? "grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+                  : "grid grid-cols-1 gap-6 space-y-6 md:grid-cols-2"
               }
             >
-              {/* {allItems.map((item, index) => (
-                <motion.a
-                  key={item.id}
-                  href={`/feed/${item.id}`}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: Math.min(index * 0.03, 0.3) }}
-                  className="block group"
-                >
-                  <FeedItemCard item={item} view={viewMode} />
-                </motion.a>
-              ))} */}
+              {allItems.map((item, index) => {
+                const dataItem = item as FeedItem;
+
+                return (
+                  <motion.div
+                    key={`${dataItem.id}-${index}`} // More stable key
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: Math.min(index * 0.03, 0.3) }}
+                    className="group block"
+                  >
+                    <FeedItemCard item={dataItem} view={viewMode} />
+                  </motion.div>
+                );
+              })}
             </motion.div>
           )}
         </AnimatePresence>
@@ -409,7 +489,7 @@ export const FeedArchivePage = () => {
             )}
           </div>
         )}
-      </div>
-    </div>
+      </MaxWidthContainer>
+    </section>
   );
 };

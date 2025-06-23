@@ -140,7 +140,7 @@ const BASE_CONFIG = {
 
 export const apiClient: AxiosInstance = axios.create({
   ...BASE_CONFIG,
-  baseURL: process.env.NEXT_PUBLIC_API_URL_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
 export const setAuthToken = (token: string | null): void => {
