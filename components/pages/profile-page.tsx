@@ -16,6 +16,7 @@ import {
 import Image from "next/image";
 import React, { useState } from "react";
 
+import { mockFeedItems } from "@/config/constants/mockdata";
 import { useGetBookmarkedFeeds } from "@/hooks/use-feed";
 import { FeedItem, User } from "@/types";
 
@@ -30,9 +31,9 @@ const ProfilePage = (props: Props) => {
   const [activeTab, setActiveTab] = useState("articles");
   const [isEditing, setIsEditing] = useState(false);
 
-  const feedsByUser = props.allFeeds.filter(
-    (item) => item.author.id === props.user.id
-  );
+  const feedsByUser =
+    props.allFeeds?.filter((item) => item.author.id === props.user.id) ||
+    mockFeedItems;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -176,58 +177,60 @@ const ProfilePage = (props: Props) => {
             <div>
               <h2 className="mb-6 text-xl font-semibold">Recent Articles</h2>
               <div className="space-y-6">
-                <article className="rounded-lg border border-gray-200 p-6 transition-shadow hover:shadow-md">
-                  <div className="flex gap-4">
-                    <Image
-                      src={feedsByUser[0].thumbnail}
-                      alt={feedsByUser[0].title}
-                      width={96}
-                      height={96}
-                      className="h-24 w-24 flex-shrink-0 rounded-lg object-cover"
-                    />
-                    <div className="flex-1">
-                      <div className="mb-2 flex items-start justify-between">
-                        <h3 className="line-clamp-2 text-lg font-semibold text-gray-900">
-                          {feedsByUser[0].title}
-                        </h3>
-                        {feedsByUser[0].featured && (
-                          <span className="rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800">
-                            Featured
+                {feedsByUser[0] && (
+                  <article className="rounded-lg border border-gray-200 p-6 transition-shadow hover:shadow-md">
+                    <div className="flex gap-4">
+                      <Image
+                        src={feedsByUser[0]?.thumbnail}
+                        alt={feedsByUser[0]?.title}
+                        width={96}
+                        height={96}
+                        className="h-24 w-24 flex-shrink-0 rounded-lg object-cover"
+                      />
+                      <div className="flex-1">
+                        <div className="mb-2 flex items-start justify-between">
+                          <h3 className="line-clamp-2 text-lg font-semibold text-gray-900">
+                            {feedsByUser[0]?.title}
+                          </h3>
+                          {feedsByUser[0]?.featured && (
+                            <span className="rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800">
+                              Featured
+                            </span>
+                          )}
+                        </div>
+                        <p className="mb-3 line-clamp-2 text-gray-600">
+                          {feedsByUser[0]?.description}
+                        </p>
+                        <div className="flex items-center gap-4 text-sm text-gray-500">
+                          <span>{formatDate(feedsByUser[0]?.publishedAt)}</span>
+                          <span>{feedsByUser[0].readTime} min read</span>
+                          <span className="flex items-center gap-1">
+                            <Heart className="h-4 w-4" />
+                            {feedsByUser[0]?.likes}
                           </span>
-                        )}
-                      </div>
-                      <p className="mb-3 line-clamp-2 text-gray-600">
-                        {feedsByUser[0].description}
-                      </p>
-                      <div className="flex items-center gap-4 text-sm text-gray-500">
-                        <span>{formatDate(feedsByUser[0].publishedAt)}</span>
-                        <span>{feedsByUser[0].readTime} min read</span>
-                        <span className="flex items-center gap-1">
-                          <Heart className="h-4 w-4" />
-                          {feedsByUser[0].likes}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <MessageCircle className="h-4 w-4" />
-                          {feedsByUser[0].comments}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Eye className="h-4 w-4" />
-                          {feedsByUser[0].views}
-                        </span>
-                      </div>
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {feedsByUser[0].tags.map((tag) => (
-                          <span
-                            key={tag}
-                            className="rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800"
-                          >
-                            {tag}
+                          <span className="flex items-center gap-1">
+                            <MessageCircle className="h-4 w-4" />
+                            {feedsByUser[0]?.comments}
                           </span>
-                        ))}
+                          <span className="flex items-center gap-1">
+                            <Eye className="h-4 w-4" />
+                            {feedsByUser[0]?.views}
+                          </span>
+                        </div>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {feedsByUser[0]?.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </article>
+                  </article>
+                )}
               </div>
             </div>
           )}
@@ -246,22 +249,23 @@ const ProfilePage = (props: Props) => {
                   "grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
                 }
               >
-                {Bookmarkedfeeds?.map((item, index) => {
-                  const dataItem = item as FeedItem;
+                {(Bookmarkedfeeds?.length ?? 0) > 0 &&
+                  Bookmarkedfeeds?.map((item, index) => {
+                    const dataItem = item as FeedItem;
 
-                  return (
-                    <motion.a
-                      key={`${dataItem.id}-${index}`} // More stable key
-                      href={`/feed/${dataItem.id}`}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: Math.min(index * 0.03, 0.3) }}
-                      className="group block"
-                    >
-                      <FeedItemCard item={dataItem} view={"grid"} />
-                    </motion.a>
-                  );
-                })}
+                    return (
+                      <motion.a
+                        key={`${dataItem.id}-${index}`} // More stable key
+                        href={`/feed/${dataItem.id}`}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: Math.min(index * 0.03, 0.3) }}
+                        className="group block"
+                      >
+                        <FeedItemCard item={dataItem} view={"grid"} />
+                      </motion.a>
+                    );
+                  })}
               </motion.div>
             </div>
           )}

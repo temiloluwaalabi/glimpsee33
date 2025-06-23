@@ -7,6 +7,8 @@ import { FeedItem } from "@/types";
 
 export default async function ProfilePageS() {
   const allfeeds = await feedService.getFeedItems();
-  const feeds = allfeeds.data as FeedItem[];
+  const feeds = (allfeeds.data as FeedItem[]) || [];
+
+  console.log("FEEDS", feeds);
   return <ProfilePage user={mockCurrentUser} allFeeds={feeds} />;
 }

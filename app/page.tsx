@@ -9,8 +9,8 @@ export default async function Home() {
   const feeds = await feedService.getFeedItems();
   const categories = await categoryService.getCategories();
 
-  const feedData = feeds.data as FeedItem[];
-  const categoryData = categories.data as Category[];
+  const feedData = (feeds.data as FeedItem[]) || [];
+  const categoryData = (categories.data as Category[]) || [];
   return (
     <React.Suspense>
       <ClientOnly>
