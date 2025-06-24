@@ -5,69 +5,107 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
 import { mockCurrentUser } from "@/config/constants/mockdata";
-import { SessionData, sessionOptions } from "@/lib/auth/session";
+import {
+  defaultSession,
+  SessionData,
+  sessionOptions,
+} from "@/lib/auth/session";
 import { sleep } from "@/lib/utils";
 
-export async function getSession() {
-  const shouldSleep = process.env.NODE_ENV === "development"; // Only sleep in development
+export async function getSession(): Promise<SessionData> {
+  const shouldSleep = process.env.NODE_ENV === "development";
 
-  const session = await getIronSession<SessionData>(
-    await cookies(),
-    sessionOptions
-  );
+  try {
+    const session = await getIronSession<SessionData>(
+      await cookies(),
+      sessionOptions
+    );
 
-  if (shouldSleep) {
-    await sleep(250);
+    if (shouldSleep) {
+      await sleep(250);
+    }
+
+    // Return session with defaults if empty
+    return {
+      email: session.email || defaultSession.email,
+      firstName: session.firstName || defaultSession.firstName,
+      userId: session.userId || defaultSession.userId,
+      isLoggedIn: session.isLoggedIn || defaultSession.isLoggedIn,
+    };
+  } catch (error) {
+    console.error("Session retrieval error:", error);
+    return defaultSession;
   }
-
-  return session;
 }
 
 export async function logout() {
-  const session = await getSession();
-  session.destroy();
-  // Redirect to the homepage (or login page) immediately
-  const headers = new Headers();
-  headers.set("cache-control", "no-store");
-  headers.set("location", "/"); // Correct location header setting
+  try {
+    const session = await getIronSession<SessionData>(
+      await cookies(),
+      sessionOptions
+    );
+    session.destroy();
 
-  return new Response(null, {
-    status: 303,
-    headers,
-  });
+    // Force revalidation
+    revalidatePath("/", "layout");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Logout error:", error);
+    return { success: false, error: "Logout failed" };
+  }
 }
 
 export async function loginSession(email: string) {
-  const user = mockCurrentUser;
-  // const userInfo = await getUserInfo(accessToken);
-  const session = await getSession();
-  Object.assign(session, {
-    userId: mockCurrentUser.id,
-    firstName: user.name,
-    email: email || user.email,
-    isLoggedIn: true,
-  });
+  try {
+    const user = mockCurrentUser;
+    const session = await getIronSession<SessionData>(
+      await cookies(),
+      sessionOptions
+    );
 
-  await session.save();
+    // Set session properties directly (matching the interface)
+    session.userId = user.id;
+    session.firstName = user.name;
+    session.email = email || user.email;
+    session.isLoggedIn = true;
 
-  revalidatePath("/");
+    await session.save();
+
+    // Force revalidation of the entire layout
+    revalidatePath("/", "layout");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Login session error:", error);
+    return { success: false, error: "Login failed" };
+  }
 }
 
 export async function RegisterUserSession(user: {
   email: string;
   firstName: string;
 }) {
-  // const userInfo = await getUserInfo(accessToken);
-  const session = await getSession();
-  const current = mockCurrentUser;
+  try {
+    const session = await getIronSession<SessionData>(
+      await cookies(),
+      sessionOptions
+    );
+    const current = mockCurrentUser;
 
-  Object.assign(session, {
-    userId: current.id,
-    firstName: user.firstName,
-    email: user.email,
-    isLoggedIn: true,
-  });
+    session.userId = current.id;
+    session.firstName = user.firstName;
+    session.email = user.email;
+    session.isLoggedIn = true;
 
-  await session.save();
-  revalidatePath("/");
+    await session.save();
+
+    // Force revalidation of the entire layout
+    revalidatePath("/", "layout");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Register session error:", error);
+    return { success: false, error: "Registration failed" };
+  }
 }

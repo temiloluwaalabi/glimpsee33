@@ -19,13 +19,16 @@ export const sessionOptions: SessionOptions = {
   cookieOptions: {
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
-    sameSite: "strict",
+    sameSite: "lax",
     path: "/",
     maxAge: 3600,
   },
 };
 declare module "iron-session" {
   interface IronSessionData {
-    user?: SessionData;
+    email?: string;
+    isLoggedIn?: boolean;
+    userId?: string;
+    firstName?: string;
   }
 }
