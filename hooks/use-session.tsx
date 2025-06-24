@@ -64,6 +64,7 @@ export default function useSession() {
       });
       setSession(data);
       router.refresh();
+      router.push("/");
       setError(null);
     } catch (err) {
       setError(err as Error);

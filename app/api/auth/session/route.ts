@@ -1,4 +1,5 @@
 import { getIronSession } from "iron-session";
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -126,5 +127,7 @@ export async function DELETE() {
 
   session.destroy();
 
-  return Response.json(defaultSession);
+  revalidatePath("/");
+
+  return NextResponse.json(defaultSession);
 }
