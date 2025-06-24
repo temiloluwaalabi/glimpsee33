@@ -126,5 +126,7 @@ export default async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico|mockServiceWorker.js).*)",
+  ],
 };

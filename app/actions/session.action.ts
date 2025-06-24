@@ -46,12 +46,7 @@ export async function logout() {
     );
     session.destroy();
 
-    // Force revalidation
-    revalidatePath("/", "layout");
-    revalidatePath("/feed", "layout");
-    revalidatePath("/profile", "layout");
-    revalidatePath("/bookmarks", "layout");
-    revalidatePath("/favourites", "layout");
+    revalidatePath("/");
 
     return { success: true };
   } catch (error) {
@@ -76,13 +71,8 @@ export async function loginSession(email: string) {
 
     await session.save();
 
-    // Force revalidation of the entire layout
-    // Force revalidation
-    revalidatePath("/", "layout");
-    revalidatePath("/feed", "layout");
-    revalidatePath("/profile", "layout");
-    revalidatePath("/bookmarks", "layout");
-    revalidatePath("/favourites", "layout");
+    revalidatePath("/");
+
     return { success: true };
   } catch (error) {
     console.error("Login session error:", error);
@@ -107,14 +97,7 @@ export async function RegisterUserSession(user: {
     session.isLoggedIn = true;
 
     await session.save();
-
-    // Force revalidation of the entire layout
-    // Force revalidation
-    revalidatePath("/", "layout");
-    revalidatePath("/feed", "layout");
-    revalidatePath("/profile", "layout");
-    revalidatePath("/bookmarks", "layout");
-    revalidatePath("/favourites", "layout");
+    revalidatePath("/");
 
     return { success: true };
   } catch (error) {

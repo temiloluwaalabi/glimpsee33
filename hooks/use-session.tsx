@@ -63,6 +63,7 @@ export default function useSession() {
         body: JSON.stringify({ username }),
       });
       setSession(data);
+      router.refresh();
       setError(null);
     } catch (err) {
       setError(err as Error);
