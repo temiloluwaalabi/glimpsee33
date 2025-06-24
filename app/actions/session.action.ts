@@ -1,7 +1,7 @@
 "use server";
 
 import { getIronSession } from "iron-session";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
 import { mockCurrentUser } from "@/config/constants/mockdata";
@@ -24,7 +24,10 @@ export async function getSession(): Promise<SessionData> {
     if (shouldSleep) {
       await sleep(250);
     }
-
+    // Only return session data if actually logged in
+    if (!session.isLoggedIn) {
+      return defaultSession;
+    }
     // Return session with defaults if empty
     return {
       email: session.email || defaultSession.email,
@@ -46,7 +49,9 @@ export async function logout() {
     );
     session.destroy();
 
-    revalidatePath("/");
+    // Clear all relevant cache
+    revalidatePath("/", "layout");
+    revalidateTag("session");
 
     return { success: true };
   } catch (error) {
@@ -71,8 +76,9 @@ export async function loginSession(email: string) {
 
     await session.save();
 
-    revalidatePath("/");
-
+    // Clear cache after login
+    revalidatePath("/", "layout");
+    revalidateTag("session");
     return { success: true };
   } catch (error) {
     console.error("Login session error:", error);
@@ -97,7 +103,9 @@ export async function RegisterUserSession(user: {
     session.isLoggedIn = true;
 
     await session.save();
-    revalidatePath("/");
+    // Clear cache after login
+    revalidatePath("/", "layout");
+    revalidateTag("session");
 
     return { success: true };
   } catch (error) {

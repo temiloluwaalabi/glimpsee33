@@ -54,13 +54,12 @@ export default async function middleware(req: NextRequest) {
       console.log(
         "⚠️ Session call failed but auth cookie exists - assuming logged in"
       );
-      isLoggedIn = true;
     }
   } catch (error) {
     console.error("Session retrieval failed:", error);
     // Fallback to cookie presence check
-    isLoggedIn = hasBasicAuthCookie;
-    console.log("🔄 Using cookie fallback, isLoggedIn:", isLoggedIn);
+    isLoggedIn = false; // Be more strict - force re-authentication
+    console.log("🔄 Session error, requiring fresh login");
   }
 
   console.log("📱 Session Status:", {
@@ -110,14 +109,26 @@ export default async function middleware(req: NextRequest) {
 
     const loginUrl = new URL("/login", origin);
     loginUrl.searchParams.set("callbackUrl", callbackUrl);
+    const response = NextResponse.redirect(loginUrl);
+    response.headers.set(
+      "Cache-Control",
+      "no-cache, no-store, must-revalidate"
+    );
 
-    return NextResponse.redirect(loginUrl);
+    return response;
   }
 
   // Prevent logged-in users from accessing auth pages (login/signup)
   if (isAuthRoute && isLoggedIn) {
     console.log("🔄 Redirecting logged-in user away from auth route");
-    return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, origin));
+    const response = NextResponse.redirect(
+      new URL(DEFAULT_LOGIN_REDIRECT, origin)
+    );
+    response.headers.set(
+      "Cache-Control",
+      "no-cache, no-store, must-revalidate"
+    );
+    return response;
   }
 
   // Continue to the requested page

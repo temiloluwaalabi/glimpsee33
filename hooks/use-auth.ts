@@ -29,8 +29,6 @@ export const useAuth = () => {
   });
 
   const useLoginMutation = () => {
-    const router = useRouter();
-
     return useMutation({
       mutationKey: ["auth", "login"],
       mutationFn: async (credentials: LoginSchemaType) => {
@@ -52,7 +50,7 @@ export const useAuth = () => {
             ? response.message
             : "Login successful!"
         );
-        router.push("/");
+        window.location.href = "/";
       },
       onError: handleMutationError,
     });

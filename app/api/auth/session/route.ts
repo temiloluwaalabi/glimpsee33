@@ -29,9 +29,12 @@ export async function POST(request: NextRequest) {
 
   // await sleep(250);
 
-  const url = new URL("/", request.url);
+  const response = NextResponse.redirect(new URL("/", request.url), 303);
 
-  return NextResponse.redirect(url.toString(), 303);
+  // Prevent caching of the redirect
+  response.headers.set("Cache-Control", "no-cache, no-store, must-revalidate");
+
+  return response;
 }
 
 export async function GET(request: NextRequest) {
@@ -45,23 +48,38 @@ export async function GET(request: NextRequest) {
 
   if (action === "logout") {
     session.destroy();
-    const loginUrl = new URL("/login", request.url);
-    return NextResponse.redirect(loginUrl);
+    const response = NextResponse.redirect(new URL("/login", request.url));
+    response.headers.set(
+      "Cache-Control",
+      "no-cache, no-store, must-revalidate"
+    );
+    return response;
   }
-
   // await sleep(250);
 
   if (session.isLoggedIn !== true) {
     return NextResponse.json(defaultSession, { status: 401 });
   }
 
-  // ✅ Only return plain data
-  return NextResponse.json({
-    userId: session.userId,
-    email: session.email,
-    firstName: session.firstName,
-    isLoggedIn: session.isLoggedIn,
+  // Create response with proper cache headers
+  const responseData = session.isLoggedIn
+    ? {
+        userId: session.userId,
+        email: session.email,
+        firstName: session.firstName,
+        isLoggedIn: session.isLoggedIn,
+      }
+    : defaultSession;
+  const response = NextResponse.json(responseData, {
+    status: session.isLoggedIn ? 200 : 401,
   });
+
+  // Prevent caching of session data
+  response.headers.set("Cache-Control", "no-cache, no-store, must-revalidate");
+  response.headers.set("Pragma", "no-cache");
+  response.headers.set("Expires", "0");
+
+  return response;
 }
 
 export async function PATCH() {

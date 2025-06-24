@@ -42,12 +42,22 @@ export async function POST(request: NextRequest) {
       avatar: user.avatar,
       role: user.role,
     };
-
-    return NextResponse.json({
+    // Create response with proper headers to prevent caching
+    const response = NextResponse.json({
       success: true,
       user: userData,
       message: "Login successful",
     });
+
+    // Add cache control headers
+    response.headers.set(
+      "Cache-Control",
+      "no-cache, no-store, must-revalidate"
+    );
+    response.headers.set("Pragma", "no-cache");
+    response.headers.set("Expires", "0");
+
+    return response;
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json(
