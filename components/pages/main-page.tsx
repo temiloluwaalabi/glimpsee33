@@ -7,6 +7,7 @@ import * as React from "react";
 import { mockAuthors } from "@/config/constants/mockdata";
 import { allRoutes } from "@/config/constants/routes";
 import { formatDate } from "@/lib/utils";
+import { useAppStore } from "@/store/use-app-store";
 import { Category, FeedItem } from "@/types";
 
 import { FeedItemCard } from "../cards/feed-item-card";
@@ -27,6 +28,9 @@ type Props = {
 };
 export const MainPage = (props: Props) => {
   const clientFeedItems = props.allFeeds;
+  const { user, isAuthenticated } = useAppStore();
+
+  console.log("user:", user, "isAuthenticated:", isAuthenticated);
   return (
     <>
       <MaxWidthContainer className="relative">
