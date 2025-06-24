@@ -118,9 +118,9 @@ export default function SignUpForm() {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleSubmit)}
-              className="space-y-8"
+              className="space-y-10"
             >
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 md:gap-4">
                 <CustomFormField
                   control={form.control}
                   name="firstname"
@@ -186,20 +186,23 @@ export default function SignUpForm() {
                   <li>• Include at least one special character</li>
                 </ul>
               </div> */}
+              <Button
+                type="submit"
+                className="mt-10 flex h-[48px] w-full cursor-pointer items-center justify-center rounded-lg bg-blue-600 px-4 py-3 font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isPending ? (
+                  <>
+                    <Loader className="mr-2 h-5 w-5 animate-spin" />
+                    Signing up...
+                  </>
+                ) : (
+                  <>
+                    Create Account
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </>
+                )}
+              </Button>
             </form>
-            <Button className="mt-10 flex h-[48px] w-full cursor-pointer items-center justify-center rounded-lg bg-blue-600 px-4 py-3 font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50">
-              {isPending ? (
-                <>
-                  <Loader className="mr-2 h-5 w-5 animate-spin" />
-                  Signing up...
-                </>
-              ) : (
-                <>
-                  Create Account
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </>
-              )}
-            </Button>
             {/* Sign up link */}
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400">

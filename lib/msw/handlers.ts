@@ -2,11 +2,9 @@ import { delay, http, HttpResponse } from "msw";
 
 import {
   allMockFeedItems,
-  mockAuthors,
   mockCategories,
   mockCurrentUser,
 } from "@/config/constants/mockdata";
-import { User } from "@/types";
 
 export const handlers = [
   http.get(`${process.env.NEXT_PUBLIC_API_URL}/feed`, async ({ request }) => {
@@ -339,46 +337,46 @@ export const handlers = [
     });
   }),
 
-  http.post("/api/auth/register", async ({ request }) => {
-    await delay(800);
+  // http.post("/api/auth/register", async ({ request }) => {
+  //   await delay(800);
 
-    const { email, password, name } = (await request.json()) as {
-      email: string;
-      password: string;
-      name: string;
-    };
+  //   const { email, password, name } = (await request.json()) as {
+  //     email: string;
+  //     password: string;
+  //     name: string;
+  //   };
 
-    if (!email || !password || !name) {
-      return HttpResponse.json(
-        { error: "Name, email, and password are required" },
-        { status: 400 }
-      );
-    }
+  //   if (!email || !password || !name) {
+  //     return HttpResponse.json(
+  //       { error: "Name, email, and password are required" },
+  //       { status: 400 }
+  //     );
+  //   }
 
-    const existingUser = mockAuthors.find((author) => author.email === email);
+  //   const existingUser = mockAuthors.find((author) => author.email === email);
 
-    if (existingUser) {
-      return HttpResponse.json(
-        { error: "Email already registered" },
-        { status: 409 }
-      );
-    }
+  //   if (existingUser) {
+  //     return HttpResponse.json(
+  //       { error: "Email already registered" },
+  //       { status: 409 }
+  //     );
+  //   }
 
-    // Simulate user creation
-    const newUser: Partial<User> = {
-      id: Date.now().toString(),
-      email,
-      name,
-      avatar: "",
-      role: "user",
-    };
+  //   // Simulate user creation
+  //   const newUser: Partial<User> = {
+  //     id: Date.now().toString(),
+  //     email,
+  //     name,
+  //     avatar: "",
+  //     role: "user",
+  //   };
 
-    // In a real app, you'd save the user here
+  //   // In a real app, you'd save the user here
 
-    return HttpResponse.json({
-      success: true,
-      user: newUser,
-      message: "Registration successful",
-    });
-  }),
+  //   return HttpResponse.json({
+  //     success: true,
+  //     user: newUser,
+  //     message: "Registration successful",
+  //   });
+  // }),
 ];

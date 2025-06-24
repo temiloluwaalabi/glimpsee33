@@ -23,12 +23,20 @@ export async function POST(request: NextRequest) {
     };
 
     await RegisterUserSession({ email, firstName: firstname });
-
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       user: createdUser,
       message: "Registered successful",
     });
+    // Add cache control headers
+    response.headers.set(
+      "Cache-Control",
+      "no-cache, no-store, must-revalidate"
+    );
+    response.headers.set("Pragma", "no-cache");
+    response.headers.set("Expires", "0");
+
+    return response;
   } catch (error) {
     console.error("registration error:", error);
     return NextResponse.json(
