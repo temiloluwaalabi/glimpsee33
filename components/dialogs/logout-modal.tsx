@@ -1,9 +1,10 @@
 "use client";
 import { Info, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
 
-import useSession from "@/hooks/use-session";
+import { AuthResponse, authService } from "@/lib/api/api";
 import { useAppStore } from "@/store/use-app-store";
 
 import { Button } from "../ui/button";
@@ -22,20 +23,37 @@ type Props = {
   trigger: React.ReactNode;
 };
 export const LogoutModal = (props: Props) => {
-  const { clientLogoutSession } = useSession();
   const [openDialog, setOpenDialog] = React.useState(false);
   const { logout } = useAppStore();
   const [loading, setLoading] = React.useState(false);
+  const router = useRouter();
   const handleLogout = async () => {
     setLoading(true);
-    await clientLogoutSession().then(() => {
-      logout();
-      toast("Logged out successfully");
-      setOpenDialog(false);
-      setLoading(false);
-    });
-  };
+    try {
+      const data = await authService.logout();
+      const res = data.rawResponse as AuthResponse;
 
+      if (res.success) {
+        // Clear state first
+        logout();
+
+        // Then navigate
+        window.location.href = "/";
+        // Refresh after navigation
+        setTimeout(() => {
+          router.refresh();
+        }, 100);
+
+        toast(res.message || "Logged out successfully");
+        setOpenDialog(false);
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Logout failed");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <Dialog open={openDialog} onOpenChange={setOpenDialog}>
       <DialogTrigger asChild className="cursor-pointer">

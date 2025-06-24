@@ -10,6 +10,7 @@ export const handleMutationError = (error: unknown) => {
   console.error("Mutation Error", error);
   // If error is already an instance of ApiError, handle it normally
   if (error instanceof ApiError) {
+    console.log("ERROR IS AN INSTANCE OF APIERROR");
     const apiError = error instanceof ApiError ? error : new ApiError(error);
     processApiError(apiError);
     return;
@@ -37,8 +38,43 @@ export const handleMutationError = (error: unknown) => {
     toast.error(error.message || "An unexpected error occurred.");
     return;
   }
+
+  let newError: ApiError;
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "statusCode" in error &&
+    ("message" in error || "messages" in error)
+  ) {
+    // error is ApiError-like
+    const apiErrorLike = error as {
+      statusCode: number;
+      message?: string | string[];
+      messages?: string | string[];
+      errorType?: string;
+      rawErrors?: Record<string, unknown>;
+      cause?: Error;
+      context?: Record<string, unknown>;
+    };
+    newError = new ApiError({
+      statusCode: apiErrorLike.statusCode,
+      messages:
+        apiErrorLike.message ?? apiErrorLike.messages ?? "Unknown error",
+      errorType: apiErrorLike.errorType,
+      rawErrors: apiErrorLike.rawErrors,
+      cause: apiErrorLike.cause,
+      context: apiErrorLike.context,
+    });
+  } else {
+    // fallback for truly unknown errors
+    newError = new ApiError({
+      statusCode: 500,
+      messages:
+        typeof error === "string" ? error : "An unknown error occurred.",
+    });
+  }
   // Handle unknown errors
-  toast.error("An unknown error occurred.");
+  toast.error(newError.message || "An unknown error occurred.");
 };
 
 // Helper function to process ApiError instances

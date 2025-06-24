@@ -1,10 +1,6 @@
 import { delay, http, HttpResponse } from "msw";
 
-import {
-  allMockFeedItems,
-  mockCategories,
-  mockCurrentUser,
-} from "@/config/constants/mockdata";
+import { allMockFeedItems, mockCategories } from "@/config/constants/mockdata";
 
 export const handlers = [
   http.get(`${process.env.NEXT_PUBLIC_API_URL}/feed`, async ({ request }) => {
@@ -314,28 +310,28 @@ export const handlers = [
   //   });
   // }),
   // Logout
-  http.post("/api/auth/logout", async () => {
-    await delay(300);
+  // http.post("/api/auth/logout", async () => {
+  //   await delay(300);
 
-    return HttpResponse.json({
-      success: true,
-      message: "Logout successful",
-    });
-  }),
+  //   return HttpResponse.json({
+  //     success: true,
+  //     message: "Logout successful",
+  //   });
+  // }),
 
   // Get current user
-  http.get("/api/auth/me", async () => {
-    await delay(400);
+  // http.get("/api/auth/me", async () => {
+  //   await delay(400);
 
-    // In MSW, we can't access real sessions, so we'll simulate
-    // For demo purposes, return the first user
-    const user = mockCurrentUser;
+  //   // In MSW, we can't access real sessions, so we'll simulate
+  //   // For demo purposes, return the first user
+  //   const user = mockCurrentUser;
 
-    return HttpResponse.json({
-      success: true,
-      user,
-    });
-  }),
+  //   return HttpResponse.json({
+  //     success: true,
+  //     user,
+  //   });
+  // }),
 
   // http.post("/api/auth/register", async ({ request }) => {
   //   await delay(800);

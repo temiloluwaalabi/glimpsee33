@@ -7,9 +7,9 @@ export interface SessionData {
 }
 
 export const defaultSession: SessionData = {
-  email: "mockCurrentUser@gmail.com",
-  firstName: "Mock User",
-  userId: "g6d2e3f4-6i7j-9k8l-2m3n-7o8p9q0r1s2t",
+  email: "",
+  firstName: "",
+  userId: "",
   isLoggedIn: false,
 };
 

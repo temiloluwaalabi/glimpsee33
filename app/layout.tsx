@@ -191,8 +191,11 @@ export default async function RootLayout({
             <NextTopLoader color="#216015" showSpinner={false} />
 
             <Toaster richColors expand />
-            <Navbar />
-            {children}
+
+            <main className="size-full">
+              <Navbar />
+              {children}
+            </main>
             <Footer />
             {/* <BackToTop /> */}
             <MobileBottomNavigation />

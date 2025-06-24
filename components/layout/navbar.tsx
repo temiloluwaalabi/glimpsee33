@@ -7,7 +7,7 @@ import * as React from "react";
 
 import { MenuItems } from "@/config/constants";
 import { allRoutes } from "@/config/constants/routes";
-import { useAppStore } from "@/store/use-app-store";
+import useSession from "@/hooks/use-session";
 
 import { ModeToggle } from "./toggle-mode";
 import { LogoutModal } from "../dialogs/logout-modal";
@@ -17,8 +17,8 @@ import { Sheet, SheetClose, SheetContent, SheetTrigger } from "../ui/sheet";
 
 export const Navbar = () => {
   const [openSheet, setopenSheet] = React.useState(false);
-  const { isAuthenticated, user } = useAppStore();
 
+  const { session } = useSession();
   const pathname = usePathname();
   return (
     <header
@@ -81,12 +81,12 @@ export const Navbar = () => {
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-1">
-            {isAuthenticated ? (
+            {session?.isLoggedIn ? (
               <div className="flex items-center gap-1">
                 <Avatar className="flex size-10 items-center justify-center">
                   <AvatarFallback>
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-500 font-bold text-white">
-                      {user?.name?.charAt(0)}
+                      {session?.firstName?.charAt(0)}
                     </div>
                   </AvatarFallback>
                 </Avatar>
@@ -152,7 +152,7 @@ export const Navbar = () => {
                         </SheetClose>
                       );
                     })}
-                    {!isAuthenticated && (
+                    {!session?.isLoggedIn && (
                       <div className="flex gap-2 border-t border-gray-200 pt-3 dark:border-gray-700">
                         <SheetClose>
                           <Button

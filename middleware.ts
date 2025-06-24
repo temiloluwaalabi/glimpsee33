@@ -3,10 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "./app/actions/session.action";
 import {
   apiAuthPrefix,
+  apiCatPrefix,
+  apiFeedPrefix,
   authRoutes,
   DEFAULT_LOGIN_REDIRECT,
   guestRoutes,
-  sharedRoutes,
 } from "./routes";
 
 // Helper function to validate and sanitize callback URLs
@@ -26,21 +27,21 @@ export default async function middleware(req: NextRequest) {
   const session = await getSession();
   const isLoggedIn = session.isLoggedIn || false;
   console.log("SESSION", session);
-  // Add error handling for session retrieval
-
+  console.log("PATHNAME", pathname);
   // Helper function to check if a path starts with any guest or shared route
   const isAccessibleRoute = (pathname: string, routes: string[]) => {
-    return routes.some((route) => pathname.startsWith(route));
+    return routes.some((route) => pathname.endsWith(route));
   };
 
   const isAPiAuthRoute = pathname.startsWith(apiAuthPrefix);
+  const isAPiFeedRoute = pathname.startsWith(apiFeedPrefix);
+  const isAPiCatRoute = pathname.startsWith(apiCatPrefix);
   const isAuthRoute = authRoutes.includes(pathname);
-  const isGuestRoute = guestRoutes.includes(pathname);
-  const isSharedRoutes = isAccessibleRoute(pathname, sharedRoutes);
-  const privateRoute = !isGuestRoute && !isSharedRoutes;
+  const isGuestRoute = isAccessibleRoute(pathname, guestRoutes);
+  const privateRoute = !isGuestRoute;
 
   // Skip middleware for API auth routes
-  if (isAPiAuthRoute) {
+  if (isAPiAuthRoute || isAPiCatRoute || isAPiFeedRoute) {
     return NextResponse.next();
   }
 

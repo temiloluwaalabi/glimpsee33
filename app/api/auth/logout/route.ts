@@ -10,14 +10,22 @@ export async function POST() {
       await cookies(),
       sessionOptions
     );
-
     // Clear session data
     session.destroy();
-
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       message: "Logout successful",
     });
+    response.headers.set("X-Redirect", "/");
+    // Add cache control headers
+    response.headers.set(
+      "Cache-Control",
+      "no-cache, no-store, must-revalidate"
+    );
+    response.headers.set("Pragma", "no-cache");
+    response.headers.set("Expires", "0");
+
+    return response;
   } catch (error) {
     console.error("Logout error:", error);
     return NextResponse.json(

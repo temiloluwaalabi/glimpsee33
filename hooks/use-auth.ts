@@ -58,7 +58,6 @@ export const useAuth = () => {
 
   // Registration mutation
   const useRegisterMutation = () => {
-    const router = useRouter();
     return useMutation({
       mutationKey: ["auth", "register"],
       mutationFn: async (credentials: RegisterSchemaType) => {
@@ -76,9 +75,9 @@ export const useAuth = () => {
         toast.success(
           typeof response?.message === "string"
             ? response.message
-            : "Login successful!"
+            : "Registration successful!"
         );
-        router.push("/");
+        window.location.href = "/";
       },
       onError: handleMutationError,
     });

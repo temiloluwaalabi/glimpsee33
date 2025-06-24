@@ -1,5 +1,6 @@
 import React from "react";
 
+import { MainPageSkeleton } from "@/components/layout/main-page-skeleton";
 import { MainPage } from "@/components/pages/main-page";
 import ClientOnly from "@/components/shared/client-only";
 import { categoryService, feedService } from "@/lib/api/api";
@@ -13,10 +14,14 @@ export default async function Home() {
 
   const categoryData = (categories.data as Category[]) || [];
   return (
-    <React.Suspense>
-      <ClientOnly>
-        <MainPage allFeeds={feedData} allCategories={categoryData} />{" "}
-      </ClientOnly>
-    </React.Suspense>
+    <div className="min-h-[calc(100vh-70px)]">
+      {" "}
+      {/* Adjust based on navbar/footer height */}
+      <React.Suspense fallback={<MainPageSkeleton />}>
+        <ClientOnly fallback={<MainPageSkeleton />}>
+          <MainPage allFeeds={feedData} allCategories={categoryData} />
+        </ClientOnly>
+      </React.Suspense>
+    </div>
   );
 }

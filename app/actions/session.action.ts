@@ -41,7 +41,7 @@ export async function getSession(): Promise<SessionData> {
   }
 }
 
-export async function logout() {
+export async function SessionLogout() {
   try {
     const session = await getIronSession<SessionData>(
       await cookies(),
@@ -50,7 +50,7 @@ export async function logout() {
     session.destroy();
 
     // Clear all relevant cache
-    revalidatePath("/", "layout");
+    revalidatePath("/");
     revalidateTag("session");
 
     return { success: true };
