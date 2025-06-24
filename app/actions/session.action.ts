@@ -48,6 +48,10 @@ export async function logout() {
 
     // Force revalidation
     revalidatePath("/", "layout");
+    // revalidatePath("/feed", "layout");
+    // revalidatePath("/profile", "layout");
+    // revalidatePath("/bookmarks", "layout");
+    // revalidatePath("/favourites", "layout");
 
     return { success: true };
   } catch (error) {
@@ -73,8 +77,12 @@ export async function loginSession(email: string) {
     await session.save();
 
     // Force revalidation of the entire layout
+    // Force revalidation
     revalidatePath("/", "layout");
-
+    // revalidatePath("/feed", "layout");
+    // revalidatePath("/profile", "layout");
+    // revalidatePath("/bookmarks", "layout");
+    // revalidatePath("/favourites", "layout");
     return { success: true };
   } catch (error) {
     console.error("Login session error:", error);
@@ -101,7 +109,12 @@ export async function RegisterUserSession(user: {
     await session.save();
 
     // Force revalidation of the entire layout
-    revalidatePath("/", "layout");
+    // Force revalidation
+    revalidatePath("/");
+    // revalidatePath("/feed", "layout");
+    // revalidatePath("/profile", "layout");
+    // revalidatePath("/bookmarks", "layout");
+    // revalidatePath("/favourites", "layout");
 
     return { success: true };
   } catch (error) {

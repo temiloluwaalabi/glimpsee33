@@ -1,6 +1,13 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight, Chrome, Github, Lock, UserPlus } from "lucide-react";
+import {
+  ArrowRight,
+  Chrome,
+  Github,
+  Loader,
+  Lock,
+  UserPlus,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -120,6 +127,7 @@ export default function SignUpForm() {
                   label="First Name"
                   fieldType={FormFieldTypes.INPUT}
                   inputType="text"
+                  disabled={isPending}
                   placeholder="Enter your first name"
                   className="h-[48px] dark:border-gray-300 dark:bg-transparent dark:text-white dark:hover:bg-transparent"
                 />
@@ -129,6 +137,7 @@ export default function SignUpForm() {
                   label="Last Name"
                   fieldType={FormFieldTypes.INPUT}
                   inputType="text"
+                  disabled={isPending}
                   placeholder="Enter your last name"
                   className="h-[48px] dark:border-gray-300 dark:bg-transparent dark:text-white dark:hover:bg-transparent"
                 />
@@ -138,6 +147,7 @@ export default function SignUpForm() {
                 control={form.control}
                 name="email"
                 label="Email"
+                disabled={isPending}
                 fieldType={FormFieldTypes.INPUT}
                 inputType="email"
                 placeholder="Please enter your email address"
@@ -146,6 +156,7 @@ export default function SignUpForm() {
               <CustomFormField
                 control={form.control}
                 name="password"
+                disabled={isPending}
                 label="Password"
                 fieldType={FormFieldTypes.PASSWORD}
                 // disabled={isLoggingIn}
@@ -158,6 +169,7 @@ export default function SignUpForm() {
                 name="confirmPassword"
                 label="Confirm Password"
                 fieldType={FormFieldTypes.PASSWORD}
+                disabled={isPending}
                 placeholder="Confirm your password"
                 className="h-[48px] dark:border-gray-300 dark:bg-transparent dark:text-white dark:hover:bg-transparent"
               />
@@ -176,18 +188,17 @@ export default function SignUpForm() {
               </div> */}
             </form>
             <Button className="mt-10 flex h-[48px] w-full cursor-pointer items-center justify-center rounded-lg bg-blue-600 px-4 py-3 font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50">
-              {/* {isLoading ? (
-              <>
-                <Loader className="mr-2 h-5 w-5 animate-spin" />
-                Signing in...
-              </>
-            ) : (
-              "Sign In"
-            )} */}
-              <>
-                Create Account
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </>{" "}
+              {isPending ? (
+                <>
+                  <Loader className="mr-2 h-5 w-5 animate-spin" />
+                  Signing up...
+                </>
+              ) : (
+                <>
+                  Create Account
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </>
+              )}
             </Button>
             {/* Sign up link */}
             <div className="mt-6 text-center">
@@ -195,6 +206,7 @@ export default function SignUpForm() {
                 Already have an account?{" "}
                 <Button
                   variant={"link"}
+                  disabled={isPending}
                   type="button"
                   onClick={() => console.log("Sign in clicked")}
                   className="cursor-pointer !p-0 font-semibold text-blue-600 underline transition-colors duration-200 hover:text-blue-700 hover:underline"

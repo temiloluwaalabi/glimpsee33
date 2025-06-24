@@ -79,9 +79,7 @@ export default async function middleware(req: NextRequest) {
 
   const isAPiAuthRoute = pathname.startsWith(apiAuthPrefix);
   const isAuthRoute = authRoutes.includes(pathname);
-  const isGuestRoute = guestRoutes.some(
-    (route) => pathname === route || pathname.endsWith(route)
-  );
+  const isGuestRoute = guestRoutes.includes(pathname);
   const isSharedRoutes = isAccessibleRoute(pathname, sharedRoutes);
   const privateRoute = !isGuestRoute && !isSharedRoutes;
 
