@@ -2,7 +2,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, Chrome, Github, Loader2, Lock } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
 
@@ -17,7 +16,6 @@ import { Form } from "../ui/form";
 
 export default function SignInForm() {
   const { useLoginMutation } = useAuth();
-  const router = useRouter();
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -29,12 +27,7 @@ export default function SignInForm() {
   const { isPending, mutate: LoginMutation } = useLoginMutation();
 
   const handleSubmit = async (values: LoginSchemaType) => {
-    LoginMutation(values, {
-      onSuccess: () => {
-        router.refresh();
-        router.push("/");
-      },
-    });
+    LoginMutation(values);
   };
   type SocialButtonProps = {
     icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;

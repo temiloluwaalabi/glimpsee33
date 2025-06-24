@@ -49,6 +49,7 @@ export async function POST(request: NextRequest) {
       message: "Login successful",
     });
 
+    response.headers.set("X-Redirect", "/");
     // Add cache control headers
     response.headers.set(
       "Cache-Control",

@@ -91,7 +91,7 @@ export const useAuth = () => {
       LogoutStore();
       queryClient.clear();
       toast.success("Logged out successfully");
-      router.push("/login");
+      // router.push("/login");
     },
     onError: () => {
       // Force logout even if API call fails

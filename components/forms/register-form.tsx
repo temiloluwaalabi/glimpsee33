@@ -8,7 +8,6 @@ import {
   Lock,
   UserPlus,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
 
@@ -22,7 +21,6 @@ import { Form } from "../ui/form";
 
 export default function SignUpForm() {
   const { useRegisterMutation } = useAuth();
-  const router = useRouter();
 
   const form = useForm<RegisterSchemaType>({
     resolver: zodResolver(RegisterSchema),
@@ -37,12 +35,7 @@ export default function SignUpForm() {
   const { isPending, mutate: RegisterMutation } = useRegisterMutation();
 
   const handleSubmit = (values: RegisterSchemaType) => {
-    RegisterMutation(values, {
-      onSuccess: () => {
-        router.refresh();
-        router.push("/");
-      },
-    });
+    RegisterMutation(values);
   };
   type SocialButtonProps = {
     icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
